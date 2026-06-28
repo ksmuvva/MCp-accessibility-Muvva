@@ -38,7 +38,7 @@ async def run_node_engines(
     if not engines:
         return {"engines": {}}
 
-    if not config.node_engines_available():
+    if not (bool(config.NODE_EXECUTABLE) and config.NODE_RUNNER.exists() and (config.NODE_ENGINES_DIR / "node_modules").is_dir()):
         return _engine_error(
             engines,
             "Node engines are not installed. Run "
