@@ -49,7 +49,7 @@ def test_falls_back_to_default_location_without_env(tmp_path, monkeypatch):
     """
     monkeypatch.delenv("ACCESSIBILITY_MCP_CHROMIUM", raising=False)
     monkeypatch.delenv("PLAYWRIGHT_BROWSERS_PATH", raising=False)
-    cache = tmp_path / "cache" / "ms-playwright"
+    cache = tmp_path / ".cache" / "ms-playwright"
     exe = _make_chromium_build(cache)
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setattr(config.Path, "home", staticmethod(lambda: tmp_path))
