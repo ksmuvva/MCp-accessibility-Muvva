@@ -57,19 +57,28 @@ def axe_tags(level: str = DEFAULT_LEVEL, include_best_practice: bool = False) ->
 
 
 def _chromium_under(base: str) -> str | None:
-    """Return the newest Chromium executable under a Playwright browsers dir."""
-    if not base or not Path(base).is_dir():
+    """Return the newest Chromium executable under a Playwright browsers dir.
+
+    Resilient to unreadable candidates: a default location may exist but not be
+    statable by the current user (e.g. ``/root/.cache`` from an unprivileged CI
+    runner), which would otherwise raise ``PermissionError`` at import time and
+    crash the whole server/test run. Such candidates are simply skipped.
+    """
+    try:
+        if not base or not Path(base).is_dir():
+            return None
+        # Prefer the full chromium build; fall back to the headless shell.
+        patterns = [
+            os.path.join(base, "chromium-*", "chrome-linux", "chrome"),
+            os.path.join(base, "chromium_headless_shell-*", "chrome-linux", "headless_shell"),
+            os.path.join(base, "chromium-*", "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
+        ]
+        for pattern in patterns:
+            matches = sorted(glob.glob(pattern))
+            if matches:
+                return matches[-1]  # highest build number
+    except OSError:
         return None
-    # Prefer the full chromium build; fall back to the headless shell.
-    patterns = [
-        os.path.join(base, "chromium-*", "chrome-linux", "chrome"),
-        os.path.join(base, "chromium_headless_shell-*", "chrome-linux", "headless_shell"),
-        os.path.join(base, "chromium-*", "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
-    ]
-    for pattern in patterns:
-        matches = sorted(glob.glob(pattern))
-        if matches:
-            return matches[-1]  # highest build number
     return None
 
 

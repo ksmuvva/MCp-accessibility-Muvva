@@ -74,6 +74,29 @@ def test_prefers_full_build_over_headless_shell(tmp_path, monkeypatch):
     assert config._discover_chromium() == str(full)
 
 
+def test_unreadable_candidate_does_not_crash(tmp_path, monkeypatch):
+    """A default location that raises PermissionError on stat must be skipped.
+
+    Regression: discovery runs at import time, so an OSError from probing an
+    unreadable path (e.g. /root/.cache from an unprivileged CI runner) would
+    crash the whole server/test run instead of falling through.
+    """
+    monkeypatch.delenv("ACCESSIBILITY_MCP_CHROMIUM", raising=False)
+    monkeypatch.delenv("PLAYWRIGHT_BROWSERS_PATH", raising=False)
+
+    real_is_dir = config.Path.is_dir
+
+    def fake_is_dir(self):
+        if str(self) == "/root/.cache/ms-playwright":
+            raise PermissionError(13, "Permission denied")
+        return real_is_dir(self)
+
+    monkeypatch.setattr(config.Path, "is_dir", fake_is_dir)
+    # Must not raise; returns whatever else is discoverable (possibly None).
+    result = config._discover_chromium()
+    assert result is None or os.path.exists(result)
+
+
 def test_returns_none_when_nothing_found(tmp_path, monkeypatch):
     monkeypatch.delenv("ACCESSIBILITY_MCP_CHROMIUM", raising=False)
     monkeypatch.setenv("PLAYWRIGHT_BROWSERS_PATH", str(tmp_path / "empty"))
