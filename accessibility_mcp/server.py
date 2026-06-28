@@ -33,7 +33,7 @@ from accessibility_mcp import config
 from accessibility_mcp.engine import session as session_mod
 from accessibility_mcp.reporting import gds_summary, json_report, markdown_report
 from accessibility_mcp.reporting.models import PageAudit, SiteAudit
-from accessibility_mcp.rules import axe_rules, groups, wcag22
+from accessibility_mcp.rules import automated_checks, axe_rules, groups, wcag22
 
 mcp = FastMCP("accessibility-mcp")
 
@@ -431,6 +431,83 @@ def list_axe_rules(wcag_only: bool = False) -> dict[str, Any]:
 
 
 @mcp.tool()
+async def audit_automated_checks(
+    url: str = "", html: str = "", session_id: str = "", level: str = "AA",
+) -> dict[str, Any]:
+    """Run ALL automated WCAG checks at once (every machine-detectable criterion).
+
+    Runs the axe rules for every WCAG 2.2 criterion (up to `level`) that can be
+    automated — a high-confidence pass/fail across the machine-testable surface.
+    Criteria that cannot be automated are reported by `list_manual_checks`.
+
+    Provide one of: url, html, or session_id.
+    """
+    rule_ids = automated_checks.automated_rule_ids(level)
+    if session_id:
+        session = session_mod.manager.get(session_id)
+        if session is None:
+            return {"error": f"Unknown session_id '{session_id}'."}
+        result = await audit_engine.audit_rules_on_page(session.page, rule_ids, level=level)
+    elif url:
+        result = await audit_engine.audit_rules(rule_ids, url=url, level=level)
+    elif html:
+        result = await audit_engine.audit_rules(rule_ids, html=html, level=level)
+    else:
+        return {"error": "Provide one of: url, html, or session_id."}
+    return _page_payload(result)
+
+
+@mcp.tool()
+def list_automated_checks(level: str = "AA") -> dict[str, Any]:
+    """List the WCAG criteria that CAN be automated, with the axe rules behind each.
+
+    These are the criteria the automated-check tools (check_wcag_<n> and
+    audit_automated_checks) can verify. Each also names its per-criterion tool.
+
+    Args:
+        level: Highest conformance level to include: "A" or "AA" (default).
+    """
+    mapping = automated_checks.automatable_criteria(level)
+    checks = []
+    for number, rule_ids in mapping.items():
+        crit = wcag22.CRITERIA_BY_NUMBER.get(number)
+        checks.append({
+            "criterion": number,
+            "name": crit.name if crit else "",
+            "level": crit.level if crit else "",
+            "tool_name": automated_checks.criterion_tool_name(number),
+            "axe_rules": rule_ids,
+            "understanding_url": crit.understanding_url if crit else "",
+        })
+    return {
+        "level": level.upper(),
+        "automated_check_tools_enabled": config.AUTOMATED_CHECK_TOOLS,
+        "total": len(checks),
+        "checks": checks,
+    }
+
+
+@mcp.tool()
+def list_manual_checks(level: str = "AA") -> dict[str, Any]:
+    """List the WCAG criteria that CANNOT be automated and need human review.
+
+    These have no axe-core coverage; automated tools cannot verify them, so they
+    must be assessed manually (e.g. keyboard operation, focus order, captions, and
+    several of the new WCAG 2.2 criteria). Honest scoping for compliance claims.
+
+    Args:
+        level: Highest conformance level to include: "A" or "AA" (default).
+    """
+    crits = automated_checks.manual_only_criteria(level)
+    return {
+        "level": level.upper(),
+        "total": len(crits),
+        "note": "Automated tools cannot verify these criteria; assess them manually.",
+        "criteria": [c.to_dict() for c in crits],
+    }
+
+
+@mcp.tool()
 def list_groups() -> dict[str, Any]:
     """List the grouped audit tools and which axe rules each runs.
 
@@ -596,6 +673,34 @@ def _register_group_tools() -> int:
 
 
 _GROUP_COUNT = _register_group_tools()
+
+
+# ----------------------------------------------------------------------------- #
+# Per-WCAG-criterion automated-check tools (one per automatable criterion)
+# ----------------------------------------------------------------------------- #
+
+
+def _register_automated_check_tools() -> int:
+    if not config.AUTOMATED_CHECK_TOOLS:
+        return 0
+    count = 0
+    for number, rule_ids in automated_checks.automatable_criteria("AA").items():
+        crit = wcag22.CRITERIA_BY_NUMBER.get(number)
+        name = crit.name if crit else number
+        tool_name = automated_checks.criterion_tool_name(number)
+        tool = _make_group_tool(rule_ids)
+        tool.__name__ = tool_name
+        description = (
+            f"Automated check for WCAG {number} {name} (level "
+            f"{crit.level if crit else '?'}): runs the {len(rule_ids)} axe rule(s) "
+            "that test this criterion. Provide one of: url, html, or session_id."
+        )
+        mcp.add_tool(tool, name=tool_name, description=description)
+        count += 1
+    return count
+
+
+_AUTOMATED_CHECK_COUNT = _register_automated_check_tools()
 
 
 def main() -> None:

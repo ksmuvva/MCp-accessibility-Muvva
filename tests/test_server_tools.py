@@ -24,6 +24,11 @@ async def test_all_tool_categories_registered():
     # Catalogue / reporting
     assert {"list_engines", "list_wcag_rules", "list_axe_rules", "list_groups",
             "generate_accessibility_statement"} <= names
+    # Automated-check tools: suite + catalogues + per-criterion (on by default)
+    assert {"audit_automated_checks", "list_automated_checks", "list_manual_checks"} <= names
+    check_tools = {n for n in names if n.startswith("check_wcag_")}
+    assert len(check_tools) >= 10
+    assert "check_wcag_1_4_3" in check_tools
     # Per-rule tools (on by default)
     axe_tools = {n for n in names if n.startswith("axe_")}
     assert len(axe_tools) > 80

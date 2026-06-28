@@ -91,6 +91,18 @@ async def test_dedicated_pa11y_tool(fixture_server):
 
 
 @pytest.mark.asyncio
+async def test_automated_checks_suite(fixture_server):
+    from accessibility_mcp.rules import automated_checks
+    result = await audit.audit_rules(
+        automated_checks.automated_rule_ids("AA"), url=f"{fixture_server}/failing.html"
+    )
+    assert result.ok
+    ids = {v.id for v in result.violations}
+    # The broken fixture should trip multiple automated checks.
+    assert "image-alt" in ids
+
+
+@pytest.mark.asyncio
 async def test_grouped_audit_perceivable(fixture_server):
     # The perceivable group should catch image-alt / color-contrast on the fixture.
     from accessibility_mcp.rules import groups

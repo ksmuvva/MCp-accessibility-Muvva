@@ -51,6 +51,17 @@ fine-grained checks.
 | `audit_current_page` | Audit the current post-interaction state. |
 | `browser_close` | Close the session. |
 
+**Automated-check tools (on by default):** the machine-testable WCAG surface.
+
+| Tool | Description |
+| --- | --- |
+| `audit_automated_checks` | Runs every automatable WCAG criterion at once — high-confidence pass/fail. |
+| `check_wcag_<n>` (e.g. `check_wcag_1_4_3`) | One tool per automatable WCAG criterion. |
+| `list_automated_checks` | WCAG criteria that can be automated, with the axe rules behind each. |
+| `list_manual_checks` | WCAG criteria that cannot be automated and need human review. |
+
+Each audit tool takes `url`, `html` or `session_id`. Disable per-criterion tools with `ACCESSIBILITY_MCP_AUTOMATED_CHECK_TOOLS=0`.
+
 **Grouped audit tools (on by default):** run a related set of rules at once.
 
 | Tool | Description |
@@ -169,6 +180,7 @@ If you installed into a virtualenv, point `command` at that venv's executable, e
 | `ACCESSIBILITY_MCP_MAX_DEPTH` | `2` | Default crawl depth limit. |
 | `ACCESSIBILITY_MCP_PER_RULE_TOOLS` | `1` | Register ~100 per-axe-rule tools. Set `0` to disable. |
 | `ACCESSIBILITY_MCP_GROUP_TOOLS` | `1` | Register grouped tools (WCAG principle + axe category). Set `0` to disable. |
+| `ACCESSIBILITY_MCP_AUTOMATED_CHECK_TOOLS` | `1` | Register per-WCAG-criterion automated-check tools. Set `0` to disable. |
 | `ACCESSIBILITY_MCP_NODE` | auto-detect | Path to the Node.js executable for the engine runner. |
 
 `audit_url` / `audit_site` need outbound network access to the target site. In
