@@ -33,7 +33,7 @@ from accessibility_mcp import config
 from accessibility_mcp.engine import session as session_mod
 from accessibility_mcp.reporting import gds_summary, json_report, markdown_report
 from accessibility_mcp.reporting.models import PageAudit, SiteAudit
-from accessibility_mcp.rules import axe_rules, wcag22
+from accessibility_mcp.rules import axe_rules, groups, wcag22
 
 mcp = FastMCP("accessibility-mcp")
 
@@ -430,6 +430,28 @@ def list_axe_rules(wcag_only: bool = False) -> dict[str, Any]:
 
 
 @mcp.tool()
+def list_groups() -> dict[str, Any]:
+    """List the grouped audit tools and which axe rules each runs.
+
+    Two grouping schemes: by WCAG principle (audit_perceivable / audit_operable /
+    audit_understandable / audit_robust) and by axe category (audit_group_<cat>).
+    """
+    principle = groups.principle_groups()
+    category = groups.category_groups()
+    return {
+        "group_tools_enabled": config.GROUP_TOOLS,
+        "wcag_principle_groups": {
+            f"audit_{name}": {"rule_count": len(ids), "rules": ids}
+            for name, ids in principle.items()
+        },
+        "axe_category_groups": {
+            groups.category_tool_name(cat): {"category": cat, "rule_count": len(ids), "rules": ids}
+            for cat, ids in sorted(category.items())
+        },
+    }
+
+
+@mcp.tool()
 async def generate_accessibility_statement(
     audit_id: str = "",
     url: str = "",
@@ -516,6 +538,63 @@ def _register_per_rule_tools() -> int:
 
 
 _PER_RULE_COUNT = _register_per_rule_tools()
+
+
+# ----------------------------------------------------------------------------- #
+# Grouped audit tools (WCAG principle + axe category)
+# ----------------------------------------------------------------------------- #
+
+
+def _make_group_tool(rule_ids: list[str]):
+    async def tool(
+        url: str = "", html: str = "", session_id: str = "", level: str = "AA"
+    ) -> dict[str, Any]:
+        if session_id:
+            session = session_mod.manager.get(session_id)
+            if session is None:
+                return {"error": f"Unknown session_id '{session_id}'."}
+            result = await audit_engine.audit_rules_on_page(session.page, rule_ids, level=level)
+        elif url:
+            result = await audit_engine.audit_rules(rule_ids, url=url, level=level)
+        elif html:
+            result = await audit_engine.audit_rules(rule_ids, html=html, level=level)
+        else:
+            return {"error": "Provide one of: url, html, or session_id."}
+        return _page_payload(result)
+
+    return tool
+
+
+def _register_group_tools() -> int:
+    if not config.GROUP_TOOLS:
+        return 0
+    count = 0
+    # WCAG principle groups: audit_perceivable / operable / understandable / robust.
+    for name, ids in groups.principle_groups().items():
+        tool = _make_group_tool(ids)
+        tool.__name__ = f"audit_{name}"
+        description = (
+            f"Audit the WCAG '{name.capitalize()}' principle: runs the {len(ids)} "
+            f"axe rules mapped to WCAG {name} criteria. Provide one of: url, html, "
+            "or session_id."
+        )
+        mcp.add_tool(tool, name=f"audit_{name}", description=description)
+        count += 1
+    # axe category groups: audit_group_<category>.
+    for category, ids in groups.category_groups().items():
+        tool_name = groups.category_tool_name(category)
+        tool = _make_group_tool(ids)
+        tool.__name__ = tool_name
+        description = (
+            f"Audit the '{category}' rule group ({len(ids)} axe rules). "
+            "Provide one of: url, html, or session_id."
+        )
+        mcp.add_tool(tool, name=tool_name, description=description)
+        count += 1
+    return count
+
+
+_GROUP_COUNT = _register_group_tools()
 
 
 def main() -> None:

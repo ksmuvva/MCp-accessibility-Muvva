@@ -22,12 +22,25 @@ async def test_all_tool_categories_registered():
         "browser_wait", "browser_snapshot", "audit_current_page", "browser_close",
     } <= names
     # Catalogue / reporting
-    assert {"list_engines", "list_wcag_rules", "list_axe_rules",
+    assert {"list_engines", "list_wcag_rules", "list_axe_rules", "list_groups",
             "generate_accessibility_statement"} <= names
     # Per-rule tools (on by default)
     axe_tools = {n for n in names if n.startswith("axe_")}
     assert len(axe_tools) > 80
     assert "axe_color_contrast" in axe_tools
+    # Grouped tools (on by default): WCAG principles + axe categories
+    assert {"audit_perceivable", "audit_operable", "audit_understandable",
+            "audit_robust"} <= names
+    group_cats = {n for n in names if n.startswith("audit_group_")}
+    assert len(group_cats) >= 5
+    assert "audit_group_color" in group_cats
+
+
+def test_list_groups_structure():
+    info = server.list_groups()
+    assert "audit_perceivable" in info["wcag_principle_groups"]
+    assert info["wcag_principle_groups"]["audit_perceivable"]["rule_count"] > 0
+    assert any("color" in k for k in info["axe_category_groups"])
 
 
 def test_list_engines_reports_axe_available():

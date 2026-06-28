@@ -88,23 +88,25 @@ async def _audit_loaded_page(
     )
 
 
-async def audit_rule_on_page(page, rule_id: str, *, level: str = config.DEFAULT_LEVEL) -> PageAudit:
-    """Run a single axe-core rule against an already-open page."""
-    results = await axe_runner.run_axe_rules(page, [rule_id])
+async def audit_rules_on_page(
+    page, rule_ids: list[str], *, level: str = config.DEFAULT_LEVEL
+) -> PageAudit:
+    """Run a set of axe-core rules against an already-open page."""
+    results = await axe_runner.run_axe_rules(page, rule_ids)
     return builder.build_page_audit(
         target=page.url, level=level, axe_results=results, govuk_findings=[],
         engines_used=["axe"], axe_version=axe_runner.axe_engine_version(),
     )
 
 
-async def audit_rule(
-    rule_id: str,
+async def audit_rules(
+    rule_ids: list[str],
     *,
     url: str | None = None,
     html: str | None = None,
     level: str = config.DEFAULT_LEVEL,
 ) -> PageAudit:
-    """Run a single axe-core rule against a URL or HTML snippet."""
+    """Run a set of axe-core rules against a URL or HTML snippet."""
     target = url or "<html-snippet>"
     session = BrowserSession()
     try:
@@ -117,7 +119,7 @@ async def audit_rule(
                     target=target, level=level, axe_results={}, govuk_findings=[],
                     engines_used=["axe"], error=f"Could not load target: {exc}",
                 )
-            return await audit_rule_on_page(page, rule_id, level=level)
+            return await audit_rules_on_page(page, rule_ids, level=level)
     except Exception as exc:
         return builder.build_page_audit(
             target=target, level=level, axe_results={}, govuk_findings=[],
@@ -125,6 +127,22 @@ async def audit_rule(
         )
     finally:
         await session.close()
+
+
+async def audit_rule_on_page(page, rule_id: str, *, level: str = config.DEFAULT_LEVEL) -> PageAudit:
+    """Run a single axe-core rule against an already-open page."""
+    return await audit_rules_on_page(page, [rule_id], level=level)
+
+
+async def audit_rule(
+    rule_id: str,
+    *,
+    url: str | None = None,
+    html: str | None = None,
+    level: str = config.DEFAULT_LEVEL,
+) -> PageAudit:
+    """Run a single axe-core rule against a URL or HTML snippet."""
+    return await audit_rules([rule_id], url=url, html=html, level=level)
 
 
 async def audit_open_page(

@@ -81,6 +81,29 @@ async def test_dedicated_pa11y_tool(fixture_server):
 
 
 @pytest.mark.asyncio
+async def test_grouped_audit_perceivable(fixture_server):
+    # The perceivable group should catch image-alt / color-contrast on the fixture.
+    from accessibility_mcp.rules import groups
+    result = await audit.audit_rules(
+        groups.principle_groups()["perceivable"], url=f"{fixture_server}/failing.html"
+    )
+    assert result.ok
+    ids = {v.id for v in result.violations}
+    assert "image-alt" in ids
+
+
+@pytest.mark.asyncio
+async def test_grouped_audit_color_category(fixture_server):
+    from accessibility_mcp.rules import groups
+    result = await audit.audit_rules(
+        groups.category_groups()["color"], url=f"{fixture_server}/failing.html"
+    )
+    assert result.ok
+    # Only colour rules run; every finding must be a colour rule.
+    assert all(v.id in groups.category_groups()["color"] for v in result.violations)
+
+
+@pytest.mark.asyncio
 async def test_interactive_session_flow(fixture_server):
     manager = session_mod.SessionManager()
     session = await manager.open()

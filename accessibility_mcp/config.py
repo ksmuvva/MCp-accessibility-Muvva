@@ -162,6 +162,9 @@ NODE_EXECUTABLE = os.environ.get("ACCESSIBILITY_MCP_NODE") or shutil.which("node
 # Whether to register one MCP tool per axe rule (~100 tools). On by default.
 PER_RULE_TOOLS = os.environ.get("ACCESSIBILITY_MCP_PER_RULE_TOOLS", "1") not in ("0", "false", "")
 
+# Whether to register grouped audit tools (WCAG principle + axe category). On by default.
+GROUP_TOOLS = os.environ.get("ACCESSIBILITY_MCP_GROUP_TOOLS", "1") not in ("0", "false", "")
+
 
 def node_engines_available() -> bool:
     """True if Node and the installed engine runner are present."""

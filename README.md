@@ -51,6 +51,16 @@ fine-grained checks.
 | `audit_current_page` | Audit the current post-interaction state. |
 | `browser_close` | Close the session. |
 
+**Grouped audit tools (on by default):** run a related set of rules at once.
+
+| Tool | Description |
+| --- | --- |
+| `audit_perceivable` / `audit_operable` / `audit_understandable` / `audit_robust` | All axe rules under a WCAG principle. |
+| `audit_group_color`, `audit_group_forms`, `audit_group_keyboard`, `audit_group_aria`, `audit_group_structure`, `audit_group_tables`, … | All axe rules in an axe category. |
+| `list_groups` | Lists every group tool and the rules it runs. |
+
+Each takes `url`, `html` or `session_id`. Disable with `ACCESSIBILITY_MCP_GROUP_TOOLS=0`.
+
 **Per-axe-rule tools (~100, on by default):** one tool per axe rule, e.g.
 `axe_color_contrast`, `axe_image_alt`, `axe_label`. Each takes `url`, `html` or
 `session_id`. Disable with `ACCESSIBILITY_MCP_PER_RULE_TOOLS=0`.
@@ -158,6 +168,7 @@ If you installed into a virtualenv, point `command` at that venv's executable, e
 | `ACCESSIBILITY_MCP_MAX_PAGES` | `20` | Default crawl page limit. |
 | `ACCESSIBILITY_MCP_MAX_DEPTH` | `2` | Default crawl depth limit. |
 | `ACCESSIBILITY_MCP_PER_RULE_TOOLS` | `1` | Register ~100 per-axe-rule tools. Set `0` to disable. |
+| `ACCESSIBILITY_MCP_GROUP_TOOLS` | `1` | Register grouped tools (WCAG principle + axe category). Set `0` to disable. |
 | `ACCESSIBILITY_MCP_NODE` | auto-detect | Path to the Node.js executable for the engine runner. |
 
 `audit_url` / `audit_site` need outbound network access to the target site. In
