@@ -165,6 +165,9 @@ PER_RULE_TOOLS = os.environ.get("ACCESSIBILITY_MCP_PER_RULE_TOOLS", "1") not in 
 # Whether to register grouped audit tools (WCAG principle + axe category). On by default.
 GROUP_TOOLS = os.environ.get("ACCESSIBILITY_MCP_GROUP_TOOLS", "1") not in ("0", "false", "")
 
+# Whether to register per-WCAG-criterion automated-check tools (~30). On by default.
+AUTOMATED_CHECK_TOOLS = os.environ.get("ACCESSIBILITY_MCP_AUTOMATED_CHECK_TOOLS", "1") not in ("0", "false", "")
+
 
 def node_engines_available() -> bool:
     """True if Node and the installed engine runner are present."""
