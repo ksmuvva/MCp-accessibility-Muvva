@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "accessibility-mcp"
+version = "0.1.0"
+description = "MCP server for WCAG 2.2 AA accessibility auditing aligned with the GOV.UK / GDS standard"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Accessibility MCP" }]
+keywords = ["mcp", "accessibility", "wcag", "wcag2.2", "govuk", "gds", "axe-core", "a11y"]
+
+dependencies = [
+    "mcp[cli]>=1.12",
+    "playwright>=1.40",
+    "pydantic>=2.5",
+    "beautifulsoup4>=4.12",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
+
+[project.scripts]
+accessibility-mcp = "accessibility_mcp.server:main"
+
+[tool.setuptools]
+packages = [
+    "accessibility_mcp",
+    "accessibility_mcp.engine",
+    "accessibility_mcp.rules",
+    "accessibility_mcp.reporting",
+]
+
+[tool.setuptools.package-data]
+accessibility_mcp = [
+    "vendor/*.js",
+    "vendor/*.json",
+    "engines_node/*.mjs",
+    "engines_node/*.json",
+    "engines_node/*.sh",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -1,0 +1,1907 @@
+{
+  "axe_version": "4.12.1",
+  "rules": [
+    {
+      "actIds": null,
+      "description": "Ensure every accesskey attribute value is unique",
+      "enabled": true,
+      "help": "accesskey attribute value should be unique",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/accesskeys?application=axeAPI",
+      "ruleId": "accesskeys",
+      "tags": [
+        "cat.keyboard",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "c487ae"
+      ],
+      "description": "Ensure <area> elements of image maps have alternative text",
+      "enabled": true,
+      "help": "Active <area> elements must have alternative text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/area-alt?application=axeAPI",
+      "ruleId": "area-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag244",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.2.4.4",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-1.1.2"
+      ]
+    },
+    {
+      "actIds": [
+        "5c01ea"
+      ],
+      "description": "Ensure an element's role supports its ARIA attributes",
+      "enabled": true,
+      "help": "Elements must only use supported ARIA attributes",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-attr?application=axeAPI",
+      "ruleId": "aria-allowed-attr",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure role attribute has an appropriate value for the element",
+      "enabled": true,
+      "help": "ARIA role should be appropriate for the element",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-allowed-role?application=axeAPI",
+      "ruleId": "aria-allowed-role",
+      "tags": [
+        "cat.aria",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure aria-braillelabel and aria-brailleroledescription have a non-braille equivalent",
+      "enabled": true,
+      "help": "aria-braille attributes must have a non-braille equivalent",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-braille-equivalent?application=axeAPI",
+      "ruleId": "aria-braille-equivalent",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2"
+      ]
+    },
+    {
+      "actIds": [
+        "97a4e1"
+      ],
+      "description": "Ensure every ARIA button, link and menuitem has an accessible name",
+      "enabled": true,
+      "help": "ARIA commands must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-command-name?application=axeAPI",
+      "ruleId": "aria-command-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.9.1"
+      ]
+    },
+    {
+      "actIds": [
+        "5c01ea"
+      ],
+      "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+      "enabled": true,
+      "help": "ARIA attributes must be used as specified for the element's role",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-conditional-attr?application=axeAPI",
+      "ruleId": "aria-conditional-attr",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "674b10"
+      ],
+      "description": "Ensure elements do not use deprecated roles",
+      "enabled": true,
+      "help": "Deprecated ARIA roles must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-deprecated-role?application=axeAPI",
+      "ruleId": "aria-deprecated-role",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure every ARIA dialog and alertdialog node has an accessible name",
+      "enabled": true,
+      "help": "ARIA dialog and alertdialog nodes should have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-dialog-name?application=axeAPI",
+      "ruleId": "aria-dialog-name",
+      "tags": [
+        "cat.aria",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+      "enabled": true,
+      "help": "aria-hidden=\"true\" must not be present on the document body",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-hidden-body?application=axeAPI",
+      "ruleId": "aria-hidden-body",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag131",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-10.8.1"
+      ]
+    },
+    {
+      "actIds": [
+        "6cfa84"
+      ],
+      "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+      "enabled": true,
+      "help": "ARIA hidden element must not be focusable or contain focusable elements",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-hidden-focus?application=axeAPI",
+      "ruleId": "aria-hidden-focus",
+      "tags": [
+        "cat.name-role-value",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-10.8.1"
+      ]
+    },
+    {
+      "actIds": [
+        "e086e5"
+      ],
+      "description": "Ensure every ARIA input field has an accessible name",
+      "enabled": true,
+      "help": "ARIA input fields must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-input-field-name?application=axeAPI",
+      "ruleId": "aria-input-field-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure every ARIA meter node has an accessible name",
+      "enabled": true,
+      "help": "ARIA meter nodes must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-meter-name?application=axeAPI",
+      "ruleId": "aria-meter-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag111",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "RGAAv4",
+        "RGAA-11.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure every ARIA progressbar node has an accessible name",
+      "enabled": true,
+      "help": "ARIA progressbar nodes must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-progressbar-name?application=axeAPI",
+      "ruleId": "aria-progressbar-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag111",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "RGAAv4",
+        "RGAA-11.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "5c01ea"
+      ],
+      "description": "Ensure ARIA attributes are not prohibited for an element's role",
+      "enabled": true,
+      "help": "Elements must only use permitted ARIA attributes",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-prohibited-attr?application=axeAPI",
+      "ruleId": "aria-prohibited-attr",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "4e8ab6"
+      ],
+      "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+      "enabled": true,
+      "help": "Required ARIA attributes must be provided",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-required-attr?application=axeAPI",
+      "ruleId": "aria-required-attr",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "bc4a75",
+        "ff89c9"
+      ],
+      "description": "Ensure elements with an ARIA role that require child roles contain them",
+      "enabled": true,
+      "help": "Certain ARIA roles must contain particular children",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-required-children?application=axeAPI",
+      "ruleId": "aria-required-children",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.3.1"
+      ]
+    },
+    {
+      "actIds": [
+        "ff89c9"
+      ],
+      "description": "Ensure elements with an ARIA role that require parent roles are contained by them",
+      "enabled": true,
+      "help": "Certain ARIA roles must be contained by particular parents",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-required-parent?application=axeAPI",
+      "ruleId": "aria-required-parent",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.3.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure aria-roledescription is only used on elements with an implicit or explicit role",
+      "enabled": false,
+      "help": "aria-roledescription must be on elements with a semantic role",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-roledescription?application=axeAPI",
+      "ruleId": "aria-roledescription",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "deprecated"
+      ]
+    },
+    {
+      "actIds": [
+        "674b10"
+      ],
+      "description": "Ensure all elements with a role attribute use a valid value",
+      "enabled": true,
+      "help": "ARIA roles used must conform to valid values",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-roles?application=axeAPI",
+      "ruleId": "aria-roles",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure every ARIA tab node has an accessible name",
+      "enabled": true,
+      "help": "ARIA tab nodes must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-tab-name?application=axeAPI",
+      "ruleId": "aria-tab-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure role=\"text\" is used on elements with no focusable descendants",
+      "enabled": true,
+      "help": "\"role=text\" should have no focusable descendants",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-text?application=axeAPI",
+      "ruleId": "aria-text",
+      "tags": [
+        "cat.aria",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "e086e5"
+      ],
+      "description": "Ensure every ARIA toggle field has an accessible name",
+      "enabled": true,
+      "help": "ARIA toggle fields must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-toggle-field-name?application=axeAPI",
+      "ruleId": "aria-toggle-field-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure every ARIA tooltip node has an accessible name",
+      "enabled": true,
+      "help": "ARIA tooltip nodes must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-tooltip-name?application=axeAPI",
+      "ruleId": "aria-tooltip-name",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure every ARIA treeitem node has an accessible name",
+      "enabled": true,
+      "help": "ARIA treeitem nodes should have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-treeitem-name?application=axeAPI",
+      "ruleId": "aria-treeitem-name",
+      "tags": [
+        "cat.aria",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "6a7281"
+      ],
+      "description": "Ensure all ARIA attributes have valid values",
+      "enabled": true,
+      "help": "ARIA attributes must conform to valid values",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-valid-attr-value?application=axeAPI",
+      "ruleId": "aria-valid-attr-value",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "5f99a7"
+      ],
+      "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+      "enabled": true,
+      "help": "ARIA attributes must conform to valid names",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/aria-valid-attr?application=axeAPI",
+      "ruleId": "aria-valid-attr",
+      "tags": [
+        "cat.aria",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "2eb176",
+        "afb423"
+      ],
+      "description": "Ensure <audio> elements have captions",
+      "enabled": false,
+      "help": "<audio> elements must have a captions track",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/audio-caption?application=axeAPI",
+      "ruleId": "audio-caption",
+      "tags": [
+        "cat.time-and-media",
+        "wcag2a",
+        "wcag121",
+        "EN-301-549",
+        "EN-9.1.2.1",
+        "section508",
+        "section508.22.a",
+        "deprecated"
+      ]
+    },
+    {
+      "actIds": [
+        "73f2c2"
+      ],
+      "description": "Ensure the autocomplete attribute is correct and suitable for the form field",
+      "enabled": true,
+      "help": "autocomplete attribute must be used correctly",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/autocomplete-valid?application=axeAPI",
+      "ruleId": "autocomplete-valid",
+      "tags": [
+        "cat.forms",
+        "wcag21aa",
+        "wcag135",
+        "EN-301-549",
+        "EN-9.1.3.5",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.13.1"
+      ]
+    },
+    {
+      "actIds": [
+        "24afc2",
+        "9e45ec",
+        "78fd32"
+      ],
+      "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
+      "enabled": true,
+      "help": "Inline text spacing must be adjustable with custom stylesheets",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/avoid-inline-spacing?application=axeAPI",
+      "ruleId": "avoid-inline-spacing",
+      "tags": [
+        "cat.structure",
+        "wcag21aa",
+        "wcag1412",
+        "EN-301-549",
+        "EN-9.1.4.12",
+        "ACT"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <blink> elements are not used",
+      "enabled": true,
+      "help": "<blink> elements are deprecated and must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/blink?application=axeAPI",
+      "ruleId": "blink",
+      "tags": [
+        "cat.time-and-media",
+        "wcag2a",
+        "wcag222",
+        "section508",
+        "section508.22.j",
+        "TTv5",
+        "TT2.b",
+        "EN-301-549",
+        "EN-9.2.2.2",
+        "RGAAv4",
+        "RGAA-13.8.1"
+      ]
+    },
+    {
+      "actIds": [
+        "97a4e1",
+        "m6b1q3"
+      ],
+      "description": "Ensure buttons have discernible text",
+      "enabled": true,
+      "help": "Buttons must have discernible text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/button-name?application=axeAPI",
+      "ruleId": "button-name",
+      "tags": [
+        "cat.name-role-value",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.9.1"
+      ]
+    },
+    {
+      "actIds": [
+        "cf77f2",
+        "047fe0",
+        "b40fd1",
+        "3e12e1",
+        "ye5d6e"
+      ],
+      "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+      "enabled": true,
+      "help": "Page must have means to bypass repeated blocks",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/bypass?application=axeAPI",
+      "ruleId": "bypass",
+      "tags": [
+        "cat.keyboard",
+        "wcag2a",
+        "wcag241",
+        "section508",
+        "section508.22.o",
+        "TTv5",
+        "TT9.a",
+        "EN-301-549",
+        "EN-9.2.4.1",
+        "RGAAv4",
+        "RGAA-12.7.1"
+      ]
+    },
+    {
+      "actIds": [
+        "09o5cg"
+      ],
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AAA enhanced contrast ratio thresholds",
+      "enabled": false,
+      "help": "Elements must meet enhanced color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast-enhanced?application=axeAPI",
+      "ruleId": "color-contrast-enhanced",
+      "tags": [
+        "cat.color",
+        "wcag2aaa",
+        "wcag146",
+        "ACT"
+      ]
+    },
+    {
+      "actIds": [
+        "afw4f7",
+        "09o5cg"
+      ],
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "enabled": true,
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI",
+      "ruleId": "color-contrast",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT",
+        "RGAAv4",
+        "RGAA-3.2.1"
+      ]
+    },
+    {
+      "actIds": [
+        "b33eff"
+      ],
+      "description": "Ensure content is not locked to any specific display orientation, and the content is operable in all display orientations",
+      "enabled": false,
+      "help": "CSS Media queries must not lock display orientation",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/css-orientation-lock?application=axeAPI",
+      "ruleId": "css-orientation-lock",
+      "tags": [
+        "cat.structure",
+        "wcag134",
+        "wcag21aa",
+        "EN-301-549",
+        "EN-9.1.3.4",
+        "RGAAv4",
+        "RGAA-13.9.1",
+        "experimental"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <dl> elements are structured correctly",
+      "enabled": true,
+      "help": "<dl> elements must only directly contain properly-ordered <dt> and <dd> groups, <script>, <template> or <div> elements",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/definition-list?application=axeAPI",
+      "ruleId": "definition-list",
+      "tags": [
+        "cat.structure",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.3.3"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
+      "enabled": true,
+      "help": "<dt> and <dd> elements must be contained by a <dl>",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/dlitem?application=axeAPI",
+      "ruleId": "dlitem",
+      "tags": [
+        "cat.structure",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.3.3"
+      ]
+    },
+    {
+      "actIds": [
+        "2779a5"
+      ],
+      "description": "Ensure each HTML document contains a non-empty <title> element",
+      "enabled": true,
+      "help": "Documents must have <title> element to aid in navigation",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/document-title?application=axeAPI",
+      "ruleId": "document-title",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag242",
+        "TTv5",
+        "TT12.a",
+        "EN-301-549",
+        "EN-9.2.4.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-8.5.1"
+      ]
+    },
+    {
+      "actIds": [
+        "3ea0c8"
+      ],
+      "description": "Ensure every id attribute value of active elements is unique",
+      "enabled": false,
+      "help": "IDs of active elements must be unique",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/duplicate-id-active?application=axeAPI",
+      "ruleId": "duplicate-id-active",
+      "tags": [
+        "cat.parsing",
+        "wcag2a-obsolete",
+        "wcag411",
+        "deprecated"
+      ]
+    },
+    {
+      "actIds": [
+        "3ea0c8"
+      ],
+      "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+      "enabled": true,
+      "help": "IDs used in ARIA and labels must be unique",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/duplicate-id-aria?application=axeAPI",
+      "ruleId": "duplicate-id-aria",
+      "tags": [
+        "cat.parsing",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-8.2.1"
+      ]
+    },
+    {
+      "actIds": [
+        "3ea0c8"
+      ],
+      "description": "Ensure every id attribute value is unique",
+      "enabled": false,
+      "help": "id attribute value must be unique",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/duplicate-id?application=axeAPI",
+      "ruleId": "duplicate-id",
+      "tags": [
+        "cat.parsing",
+        "wcag2a-obsolete",
+        "wcag411",
+        "deprecated"
+      ]
+    },
+    {
+      "actIds": [
+        "ffd0e9"
+      ],
+      "description": "Ensure headings have discernible text",
+      "enabled": true,
+      "help": "Headings should not be empty",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/empty-heading?application=axeAPI",
+      "ruleId": "empty-heading",
+      "tags": [
+        "cat.name-role-value",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure table headers have discernible text",
+      "enabled": true,
+      "help": "Table header text should not be empty",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/empty-table-header?application=axeAPI",
+      "ruleId": "empty-table-header",
+      "tags": [
+        "cat.name-role-value",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure elements in the focus order have a role appropriate for interactive content",
+      "enabled": false,
+      "help": "Elements in the focus order should have an appropriate role",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/focus-order-semantics?application=axeAPI",
+      "ruleId": "focus-order-semantics",
+      "tags": [
+        "cat.keyboard",
+        "best-practice",
+        "RGAAv4",
+        "RGAA-12.8.1",
+        "experimental"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure form field does not have multiple label elements",
+      "enabled": true,
+      "help": "Form field must not have multiple label elements",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/form-field-multiple-labels?application=axeAPI",
+      "ruleId": "form-field-multiple-labels",
+      "tags": [
+        "cat.forms",
+        "wcag2a",
+        "wcag332",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.3.3.2",
+        "RGAAv4",
+        "RGAA-11.2.1"
+      ]
+    },
+    {
+      "actIds": [
+        "akn7bn"
+      ],
+      "description": "Ensure <frame> and <iframe> elements with focusable content do not have tabindex=-1",
+      "enabled": true,
+      "help": "Frames with focusable content must not have tabindex=-1",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/frame-focusable-content?application=axeAPI",
+      "ruleId": "frame-focusable-content",
+      "tags": [
+        "cat.keyboard",
+        "wcag2a",
+        "wcag211",
+        "TTv5",
+        "TT4.a",
+        "EN-301-549",
+        "EN-9.2.1.1",
+        "RGAAv4",
+        "RGAA-7.3.2"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <iframe> and <frame> elements contain the axe-core script",
+      "enabled": true,
+      "help": "Frames should be tested with axe-core",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/frame-tested?application=axeAPI",
+      "ruleId": "frame-tested",
+      "tags": [
+        "cat.structure",
+        "best-practice",
+        "review-item"
+      ]
+    },
+    {
+      "actIds": [
+        "4b1c6c"
+      ],
+      "description": "Ensure <iframe> and <frame> elements contain a unique title attribute",
+      "enabled": true,
+      "help": "Frames must have a unique title attribute",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/frame-title-unique?application=axeAPI",
+      "ruleId": "frame-title-unique",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT12.d",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-2.2.1"
+      ]
+    },
+    {
+      "actIds": [
+        "cae760"
+      ],
+      "description": "Ensure <iframe> and <frame> elements have an accessible name",
+      "enabled": true,
+      "help": "Frames must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/frame-title?application=axeAPI",
+      "ruleId": "frame-title",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.i",
+        "TTv5",
+        "TT12.d",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-2.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the order of headings is semantically correct",
+      "enabled": true,
+      "help": "Heading levels should only increase by one",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/heading-order?application=axeAPI",
+      "ruleId": "heading-order",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Inform users about hidden content.",
+      "enabled": false,
+      "help": "Hidden content on the page should be analyzed",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/hidden-content?application=axeAPI",
+      "ruleId": "hidden-content",
+      "tags": [
+        "cat.structure",
+        "best-practice",
+        "experimental",
+        "review-item"
+      ]
+    },
+    {
+      "actIds": [
+        "b5c3f8"
+      ],
+      "description": "Ensure every HTML document has a lang attribute",
+      "enabled": true,
+      "help": "<html> element must have a lang attribute",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/html-has-lang?application=axeAPI",
+      "ruleId": "html-has-lang",
+      "tags": [
+        "cat.language",
+        "wcag2a",
+        "wcag311",
+        "TTv5",
+        "TT11.a",
+        "EN-301-549",
+        "EN-9.3.1.1",
+        "ACT",
+        "RGAAv4",
+        "RGAA-8.3.1"
+      ]
+    },
+    {
+      "actIds": [
+        "bf051a"
+      ],
+      "description": "Ensure the lang attribute of the <html> element has a valid value",
+      "enabled": true,
+      "help": "<html> element must have a valid value for the lang attribute",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/html-lang-valid?application=axeAPI",
+      "ruleId": "html-lang-valid",
+      "tags": [
+        "cat.language",
+        "wcag2a",
+        "wcag311",
+        "TTv5",
+        "TT11.a",
+        "EN-301-549",
+        "EN-9.3.1.1",
+        "ACT",
+        "RGAAv4",
+        "RGAA-8.4.1"
+      ]
+    },
+    {
+      "actIds": [
+        "5b7ae0"
+      ],
+      "description": "Ensure that HTML elements with both valid lang and xml:lang attributes agree on the base language of the page",
+      "enabled": true,
+      "help": "HTML elements with lang and xml:lang must have the same base language",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/html-xml-lang-mismatch?application=axeAPI",
+      "ruleId": "html-xml-lang-mismatch",
+      "tags": [
+        "cat.language",
+        "wcag2a",
+        "wcag311",
+        "EN-301-549",
+        "EN-9.3.1.1",
+        "ACT",
+        "RGAAv4",
+        "RGAA-8.3.1"
+      ]
+    },
+    {
+      "actIds": [
+        "b20e66"
+      ],
+      "description": "Ensure that links with the same accessible name serve a similar purpose",
+      "enabled": false,
+      "help": "Links with the same name must have a similar purpose",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/identical-links-same-purpose?application=axeAPI",
+      "ruleId": "identical-links-same-purpose",
+      "tags": [
+        "cat.semantics",
+        "wcag2aaa",
+        "wcag249"
+      ]
+    },
+    {
+      "actIds": [
+        "23a2a8"
+      ],
+      "description": "Ensure <img> elements have alternative text or a role of none or presentation",
+      "enabled": true,
+      "help": "Images must have alternative text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-alt?application=axeAPI",
+      "ruleId": "image-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT7.a",
+        "TT7.b",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "ACT",
+        "RGAAv4",
+        "RGAA-1.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure image alternative is not repeated as text",
+      "enabled": true,
+      "help": "Alternative text of images should not be repeated as text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/image-redundant-alt?application=axeAPI",
+      "ruleId": "image-redundant-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "97a4e1"
+      ],
+      "description": "Ensure input buttons have discernible text",
+      "enabled": true,
+      "help": "Input buttons must have discernible text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/input-button-name?application=axeAPI",
+      "ruleId": "input-button-name",
+      "tags": [
+        "cat.name-role-value",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.9.1"
+      ]
+    },
+    {
+      "actIds": [
+        "59796f"
+      ],
+      "description": "Ensure <input type=\"image\"> elements have alternative text",
+      "enabled": true,
+      "help": "Image buttons must have alternative text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/input-image-alt?application=axeAPI",
+      "ruleId": "input-image-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT7.a",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-1.1.3"
+      ]
+    },
+    {
+      "actIds": [
+        "2ee8b8"
+      ],
+      "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
+      "enabled": false,
+      "help": "Elements must have their visible text as part of their accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label-content-name-mismatch?application=axeAPI",
+      "ruleId": "label-content-name-mismatch",
+      "tags": [
+        "cat.semantics",
+        "wcag21a",
+        "wcag253",
+        "EN-301-549",
+        "EN-9.2.5.3",
+        "RGAAv4",
+        "RGAA-6.1.5",
+        "experimental"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure that every form element has a visible label and is not solely labeled using hidden labels, or the title or aria-describedby attributes",
+      "enabled": true,
+      "help": "Form elements should have a visible label",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label-title-only?application=axeAPI",
+      "ruleId": "label-title-only",
+      "tags": [
+        "cat.forms",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "e086e5"
+      ],
+      "description": "Ensure every form element has a label",
+      "enabled": true,
+      "help": "Form elements must have labels",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/label?application=axeAPI",
+      "ruleId": "label",
+      "tags": [
+        "cat.forms",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.n",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the banner landmark is at top level",
+      "enabled": true,
+      "help": "Banner landmark should not be contained in another landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-banner-is-top-level?application=axeAPI",
+      "ruleId": "landmark-banner-is-top-level",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the complementary landmark or aside is at top level",
+      "enabled": false,
+      "help": "Aside should not be contained in another landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-complementary-is-top-level?application=axeAPI",
+      "ruleId": "landmark-complementary-is-top-level",
+      "tags": [
+        "cat.semantics",
+        "best-practice",
+        "deprecated"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the contentinfo landmark is at top level",
+      "enabled": true,
+      "help": "Contentinfo landmark should not be contained in another landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-contentinfo-is-top-level?application=axeAPI",
+      "ruleId": "landmark-contentinfo-is-top-level",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the main landmark is at top level",
+      "enabled": true,
+      "help": "Main landmark should not be contained in another landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-main-is-top-level?application=axeAPI",
+      "ruleId": "landmark-main-is-top-level",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the document has at most one banner landmark",
+      "enabled": true,
+      "help": "Document should not have more than one banner landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-no-duplicate-banner?application=axeAPI",
+      "ruleId": "landmark-no-duplicate-banner",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the document has at most one contentinfo landmark",
+      "enabled": true,
+      "help": "Document should not have more than one contentinfo landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-no-duplicate-contentinfo?application=axeAPI",
+      "ruleId": "landmark-no-duplicate-contentinfo",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the document has at most one main landmark",
+      "enabled": true,
+      "help": "Document should not have more than one main landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-no-duplicate-main?application=axeAPI",
+      "ruleId": "landmark-no-duplicate-main",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the document has a main landmark",
+      "enabled": true,
+      "help": "Document should have one main landmark",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-one-main?application=axeAPI",
+      "ruleId": "landmark-one-main",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure landmarks are unique",
+      "enabled": true,
+      "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/landmark-unique?application=axeAPI",
+      "ruleId": "landmark-unique",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
+      "enabled": true,
+      "help": "Links must be distinguishable without relying on color",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/link-in-text-block?application=axeAPI",
+      "ruleId": "link-in-text-block",
+      "tags": [
+        "cat.color",
+        "wcag2a",
+        "wcag141",
+        "TTv5",
+        "TT13.a",
+        "EN-301-549",
+        "EN-9.1.4.1",
+        "RGAAv4",
+        "RGAA-10.6.1"
+      ]
+    },
+    {
+      "actIds": [
+        "c487ae"
+      ],
+      "description": "Ensure links have discernible text",
+      "enabled": true,
+      "help": "Links must have discernible text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/link-name?application=axeAPI",
+      "ruleId": "link-name",
+      "tags": [
+        "cat.name-role-value",
+        "wcag2a",
+        "wcag244",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.2.4.4",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-6.2.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure that lists are structured correctly",
+      "enabled": true,
+      "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/list?application=axeAPI",
+      "ruleId": "list",
+      "tags": [
+        "cat.structure",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.3.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <li> elements are used semantically",
+      "enabled": true,
+      "help": "<li> elements must be contained in a <ul> or <ol>",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/listitem?application=axeAPI",
+      "ruleId": "listitem",
+      "tags": [
+        "cat.structure",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.3.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <marquee> elements are not used",
+      "enabled": true,
+      "help": "<marquee> elements are deprecated and must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/marquee?application=axeAPI",
+      "ruleId": "marquee",
+      "tags": [
+        "cat.parsing",
+        "wcag2a",
+        "wcag222",
+        "TTv5",
+        "TT2.b",
+        "EN-301-549",
+        "EN-9.2.2.2",
+        "RGAAv4",
+        "RGAA-13.8.1"
+      ]
+    },
+    {
+      "actIds": [
+        "bisz58"
+      ],
+      "description": "Ensure <meta http-equiv=\"refresh\"> is not used for delayed refresh",
+      "enabled": false,
+      "help": "Delayed refresh must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/meta-refresh-no-exceptions?application=axeAPI",
+      "ruleId": "meta-refresh-no-exceptions",
+      "tags": [
+        "cat.time-and-media",
+        "wcag2aaa",
+        "wcag224",
+        "wcag325"
+      ]
+    },
+    {
+      "actIds": [
+        "bc659a",
+        "bisz58"
+      ],
+      "description": "Ensure <meta http-equiv=\"refresh\"> is not used for delayed refresh",
+      "enabled": true,
+      "help": "Delayed refresh under 20 hours must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/meta-refresh?application=axeAPI",
+      "ruleId": "meta-refresh",
+      "tags": [
+        "cat.time-and-media",
+        "wcag2a",
+        "wcag221",
+        "TTv5",
+        "TT8.a",
+        "EN-301-549",
+        "EN-9.2.2.1",
+        "RGAAv4",
+        "RGAA-13.1.2"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure <meta name=\"viewport\"> can scale a significant amount",
+      "enabled": true,
+      "help": "Users should be able to zoom and scale the text up to 500%",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/meta-viewport-large?application=axeAPI",
+      "ruleId": "meta-viewport-large",
+      "tags": [
+        "cat.sensory-and-visual-cues",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "b4f0c3"
+      ],
+      "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+      "enabled": true,
+      "help": "Zooming and scaling must not be disabled",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/meta-viewport?application=axeAPI",
+      "ruleId": "meta-viewport",
+      "tags": [
+        "cat.sensory-and-visual-cues",
+        "wcag2aa",
+        "wcag144",
+        "EN-301-549",
+        "EN-9.1.4.4",
+        "ACT",
+        "RGAAv4",
+        "RGAA-10.4.2"
+      ]
+    },
+    {
+      "actIds": [
+        "307n5z"
+      ],
+      "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+      "enabled": true,
+      "help": "Interactive controls must not be nested",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/nested-interactive?application=axeAPI",
+      "ruleId": "nested-interactive",
+      "tags": [
+        "cat.keyboard",
+        "wcag2a",
+        "wcag412",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "RGAAv4",
+        "RGAA-7.1.1"
+      ]
+    },
+    {
+      "actIds": [
+        "80f0bf"
+      ],
+      "description": "Ensure <video> or <audio> elements do not autoplay audio for more than 3 seconds without a control mechanism to stop or mute the audio",
+      "enabled": true,
+      "help": "<video> or <audio> elements must not play automatically",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/no-autoplay-audio?application=axeAPI",
+      "ruleId": "no-autoplay-audio",
+      "tags": [
+        "cat.time-and-media",
+        "wcag2a",
+        "wcag142",
+        "TTv5",
+        "TT2.a",
+        "EN-301-549",
+        "EN-9.1.4.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-4.10.1"
+      ]
+    },
+    {
+      "actIds": [
+        "8fc3b6"
+      ],
+      "description": "Ensure <object> elements have alternative text",
+      "enabled": true,
+      "help": "<object> elements must have alternative text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/object-alt?application=axeAPI",
+      "ruleId": "object-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "section508",
+        "section508.22.a",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "RGAAv4",
+        "RGAA-1.1.6"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure bold, italic text and font-size is not used to style <p> elements as a heading",
+      "enabled": false,
+      "help": "Styled <p> elements must not be used as headings",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/p-as-heading?application=axeAPI",
+      "ruleId": "p-as-heading",
+      "tags": [
+        "cat.semantics",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-9.1.3",
+        "experimental"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+      "enabled": true,
+      "help": "Page should contain a level-one heading",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=axeAPI",
+      "ruleId": "page-has-heading-one",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "46ca7f"
+      ],
+      "description": "Ensure elements marked as presentational do not have global ARIA or tabindex so that all screen readers ignore them",
+      "enabled": true,
+      "help": "Elements marked as presentational should be consistently ignored",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/presentation-role-conflict?application=axeAPI",
+      "ruleId": "presentation-role-conflict",
+      "tags": [
+        "cat.aria",
+        "best-practice",
+        "ACT"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure all page content is contained by landmarks",
+      "enabled": true,
+      "help": "All page content should be contained by landmarks",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+      "ruleId": "region",
+      "tags": [
+        "cat.keyboard",
+        "best-practice",
+        "RGAAv4",
+        "RGAA-9.2.1"
+      ]
+    },
+    {
+      "actIds": [
+        "23a2a8"
+      ],
+      "description": "Ensure [role=\"img\"] elements have alternative text",
+      "enabled": true,
+      "help": "[role=\"img\"] elements must have alternative text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/role-img-alt?application=axeAPI",
+      "ruleId": "role-img-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT7.a",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "ACT",
+        "RGAAv4",
+        "RGAA-1.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the scope attribute is used correctly on tables",
+      "enabled": true,
+      "help": "scope attribute should be used correctly",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/scope-attr-valid?application=axeAPI",
+      "ruleId": "scope-attr-valid",
+      "tags": [
+        "cat.tables",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": [
+        "0ssw9k"
+      ],
+      "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+      "enabled": true,
+      "help": "Scrollable region must have keyboard access",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/scrollable-region-focusable?application=axeAPI",
+      "ruleId": "scrollable-region-focusable",
+      "tags": [
+        "cat.keyboard",
+        "wcag2a",
+        "wcag211",
+        "wcag213",
+        "TTv5",
+        "TT4.a",
+        "EN-301-549",
+        "EN-9.2.1.1",
+        "EN-9.2.1.3",
+        "RGAAv4",
+        "RGAA-7.3.2"
+      ]
+    },
+    {
+      "actIds": [
+        "e086e5"
+      ],
+      "description": "Ensure select element has an accessible name",
+      "enabled": true,
+      "help": "Select element must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/select-name?application=axeAPI",
+      "ruleId": "select-name",
+      "tags": [
+        "cat.forms",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.n",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-11.1.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure that server-side image maps are not used",
+      "enabled": true,
+      "help": "Server-side image maps must not be used",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/server-side-image-map?application=axeAPI",
+      "ruleId": "server-side-image-map",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag211",
+        "section508",
+        "section508.22.f",
+        "TTv5",
+        "TT4.a",
+        "EN-301-549",
+        "EN-9.2.1.1",
+        "RGAAv4",
+        "RGAA-1.1.4"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure all skip links have a focusable target",
+      "enabled": true,
+      "help": "The skip-link target should exist and be focusable",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/skip-link?application=axeAPI",
+      "ruleId": "skip-link",
+      "tags": [
+        "cat.keyboard",
+        "best-practice",
+        "RGAAv4",
+        "RGAA-12.7.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure summary elements have discernible text",
+      "enabled": true,
+      "help": "Summary elements must have discernible text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/summary-name?application=axeAPI",
+      "ruleId": "summary-name",
+      "tags": [
+        "cat.name-role-value",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT6.a",
+        "EN-301-549",
+        "EN-9.4.1.2"
+      ]
+    },
+    {
+      "actIds": [
+        "7d6734"
+      ],
+      "description": "Ensure <svg> elements with an img, graphics-document or graphics-symbol role have accessible text",
+      "enabled": true,
+      "help": "<svg> elements with an img role must have alternative text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/svg-img-alt?application=axeAPI",
+      "ruleId": "svg-img-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT7.a",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "ACT",
+        "RGAAv4",
+        "RGAA-1.1.5"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure tabindex attribute values are not greater than 0",
+      "enabled": true,
+      "help": "Elements should not have tabindex greater than zero",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/tabindex?application=axeAPI",
+      "ruleId": "tabindex",
+      "tags": [
+        "cat.keyboard",
+        "best-practice"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure the <caption> element does not contain the same text as the summary attribute",
+      "enabled": true,
+      "help": "Tables should not have the same summary and caption",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/table-duplicate-name?application=axeAPI",
+      "ruleId": "table-duplicate-name",
+      "tags": [
+        "cat.tables",
+        "best-practice",
+        "RGAAv4",
+        "RGAA-5.2.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure that tables with a caption use the <caption> element.",
+      "enabled": false,
+      "help": "Data or header cells must not be used to give caption to a data table.",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/table-fake-caption?application=axeAPI",
+      "ruleId": "table-fake-caption",
+      "tags": [
+        "cat.tables",
+        "experimental",
+        "wcag2a",
+        "wcag131",
+        "section508",
+        "section508.22.g",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-5.4.1"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure touch targets have sufficient size and space",
+      "enabled": false,
+      "help": "All touch targets must be 24px large, or leave sufficient space",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/target-size?application=axeAPI",
+      "ruleId": "target-size",
+      "tags": [
+        "cat.sensory-and-visual-cues",
+        "wcag22aa",
+        "wcag258"
+      ]
+    },
+    {
+      "actIds": null,
+      "description": "Ensure that each non-empty data cell in a <table> larger than 3 by 3  has one or more table headers",
+      "enabled": false,
+      "help": "Non-empty <td> elements in larger <table> must have an associated table header",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/td-has-header?application=axeAPI",
+      "ruleId": "td-has-header",
+      "tags": [
+        "cat.tables",
+        "experimental",
+        "wcag2a",
+        "wcag131",
+        "section508",
+        "section508.22.g",
+        "TTv5",
+        "TT14.b",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-5.7.4"
+      ]
+    },
+    {
+      "actIds": [
+        "a25f45"
+      ],
+      "description": "Ensure that each cell in a table that uses the headers attribute refers only to other <th> elements in that table",
+      "enabled": true,
+      "help": "Table cell headers attributes must refer to other <th> elements in the same table",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/td-headers-attr?application=axeAPI",
+      "ruleId": "td-headers-attr",
+      "tags": [
+        "cat.tables",
+        "wcag2a",
+        "wcag131",
+        "section508",
+        "section508.22.g",
+        "TTv5",
+        "TT14.b",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-5.7.4"
+      ]
+    },
+    {
+      "actIds": [
+        "d0f69e"
+      ],
+      "description": "Ensure that <th> elements and elements with role=columnheader/rowheader have data cells they describe",
+      "enabled": true,
+      "help": "Table headers in a data table must refer to data cells",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/th-has-data-cells?application=axeAPI",
+      "ruleId": "th-has-data-cells",
+      "tags": [
+        "cat.tables",
+        "wcag2a",
+        "wcag131",
+        "section508",
+        "section508.22.g",
+        "TTv5",
+        "TT14.b",
+        "EN-301-549",
+        "EN-9.1.3.1",
+        "RGAAv4",
+        "RGAA-5.7.1"
+      ]
+    },
+    {
+      "actIds": [
+        "de46e4"
+      ],
+      "description": "Ensure lang attributes have valid values",
+      "enabled": true,
+      "help": "lang attribute must have a valid value",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/valid-lang?application=axeAPI",
+      "ruleId": "valid-lang",
+      "tags": [
+        "cat.language",
+        "wcag2aa",
+        "wcag312",
+        "TTv5",
+        "TT11.b",
+        "EN-301-549",
+        "EN-9.3.1.2",
+        "ACT",
+        "RGAAv4",
+        "RGAA-8.8.1"
+      ]
+    },
+    {
+      "actIds": [
+        "eac66b"
+      ],
+      "description": "Ensure <video> elements have captions",
+      "enabled": true,
+      "help": "<video> elements must have captions",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.12/video-caption?application=axeAPI",
+      "ruleId": "video-caption",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag122",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT17.a",
+        "EN-301-549",
+        "EN-9.1.2.2",
+        "RGAAv4",
+        "RGAA-4.3.1"
+      ]
+    }
+  ]
+}

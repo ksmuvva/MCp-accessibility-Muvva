@@ -1,0 +1,9 @@
+{
+  "ruleArchive": "latest",
+  "policies": ["WCAG_2_2"],
+  "failLevels": ["violation", "potentialviolation"],
+  "reportLevels": ["violation", "potentialviolation"],
+  "outputFormat": ["json"],
+  "outputFolder": "/tmp/accessibility-mcp-ibm",
+  "outputFilenameTimestamp": false
+}
