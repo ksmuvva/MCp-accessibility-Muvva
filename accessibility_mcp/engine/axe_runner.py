@@ -66,6 +66,26 @@ async def run_axe(page: Page, tags: list[str]) -> dict:
     return results
 
 
+async def run_axe_rules(page: Page, rule_ids: list[str]) -> dict:
+    """Inject axe-core and run it restricted to specific rule ids.
+
+    Powers the per-rule MCP tools (one axe rule per tool).
+    """
+    await page.add_script_tag(content=_axe_source())
+    results = await page.evaluate(
+        """
+        async (ruleIds) => {
+            return await axe.run(document, {
+                runOnly: { type: 'rule', values: ruleIds },
+                resultTypes: ['violations', 'passes', 'incomplete', 'inapplicable'],
+            });
+        }
+        """,
+        rule_ids,
+    )
+    return results
+
+
 def axe_engine_version() -> str:
     """Best-effort axe-core version extracted from the vendored bundle header."""
     head = _axe_source()[:80]

@@ -1,16 +1,23 @@
 """Accessibility MCP server — WCAG 2.2 AA auditing aligned with the GOV.UK standard.
 
-Exposes five tools over the Model Context Protocol (stdio transport):
+Exposes (over stdio):
 
-  * audit_url                        — audit one live page
-  * audit_html                       — audit a raw HTML string / component
-  * audit_site                       — crawl a site and audit each page
-  * list_wcag_rules                  — catalogue of checked WCAG 2.2 criteria
-  * generate_accessibility_statement — draft a GOV.UK-format statement
+  Bundled audits (multi-engine):
+    audit_url, audit_html, audit_site
 
-Each audit tool returns structured JSON, a human-readable Markdown report and a
-GDS-style compliance summary, plus an ``audit_id`` that can be fed to
-``generate_accessibility_statement``.
+  Interactive navigation (stateful browser session):
+    browser_open, browser_navigate, browser_click, browser_fill, browser_wait,
+    browser_snapshot, audit_current_page, browser_close
+
+  Per-axe-rule tools (~100, one per axe-core rule) — optional, on by default:
+    axe_<rule_id>, e.g. axe_color_contrast
+
+  Catalogue / reporting:
+    list_wcag_rules, list_axe_rules, list_engines, generate_accessibility_statement
+
+Engines: axe-core (in-process) plus pa11y, Lighthouse and IBM Equal Access via a
+Node subprocess. Each audit tool returns structured JSON, a Markdown report and a
+GDS-style compliance summary.
 """
 
 from __future__ import annotations
@@ -23,14 +30,17 @@ from mcp.server.fastmcp import FastMCP
 
 from accessibility_mcp import audit as audit_engine
 from accessibility_mcp import config
+from accessibility_mcp.engine import session as session_mod
 from accessibility_mcp.reporting import gds_summary, json_report, markdown_report
 from accessibility_mcp.reporting.models import PageAudit, SiteAudit
-from accessibility_mcp.rules import wcag22
+from accessibility_mcp.rules import axe_rules, wcag22
 
 mcp = FastMCP("accessibility-mcp")
 
-# Small in-memory cache of recent audits so generate_accessibility_statement can
-# reuse a prior result by id (avoids re-crawling). Bounded to avoid unbounded growth.
+# ----------------------------------------------------------------------------- #
+# Audit result cache (for generate_accessibility_statement by audit_id)
+# ----------------------------------------------------------------------------- #
+
 _AUDIT_CACHE: "OrderedDict[str, PageAudit | SiteAudit]" = OrderedDict()
 _CACHE_MAX = 50
 
@@ -50,6 +60,8 @@ def _page_payload(result: PageAudit) -> dict[str, Any]:
         "audit_id": audit_id,
         "target": result.target,
         "status": summary.status.value,
+        "engines_used": result.engines_used,
+        "engine_errors": result.engine_errors,
         "json": json_report.page_to_dict(result),
         "markdown_report": markdown_report.render_page(result),
         "gds_summary": gds_summary.render_summary(summary),
@@ -68,26 +80,36 @@ def _site_payload(result: SiteAudit) -> dict[str, Any]:
     }
 
 
+# ----------------------------------------------------------------------------- #
+# Bundled multi-engine audit tools
+# ----------------------------------------------------------------------------- #
+
+
 @mcp.tool()
 async def audit_url(
     url: str,
     level: str = "AA",
+    engines: list[str] | None = None,
+    steps: list[dict] | None = None,
     include_best_practice: bool = False,
 ) -> dict[str, Any]:
     """Audit a single live web page for WCAG 2.2 accessibility (GOV.UK standard).
 
-    Loads the URL in headless Chromium, runs axe-core restricted to the chosen
-    conformance level plus GOV.UK-specific checks, and returns structured JSON, a
-    Markdown report and a GDS-style compliance summary.
+    Loads the URL in headless Chromium, optionally performs interaction `steps`
+    first, then runs the chosen `engines` plus GOV.UK-specific checks. Returns
+    structured JSON, a Markdown report and a GDS-style compliance summary.
 
     Args:
         url: The page URL to audit (http/https).
-        level: WCAG conformance level: "A", "AA" (default, GOV.UK requirement) or "AAA".
-        include_best_practice: Also run axe "best-practice" rules (not WCAG, but
-            commonly flagged by GDS reviewers).
+        level: WCAG level: "A", "AA" (default, GOV.UK requirement) or "AAA".
+        engines: Subset of ["axe","pa11y","lighthouse","ibm"]. Defaults to ["axe"].
+        steps: Optional interactions before auditing, each
+            {"action": "click|fill|wait|press|navigate", "selector": ..., "value": ..., "ms": ...}.
+        include_best_practice: Also run axe "best-practice" rules (not WCAG).
     """
     result = await audit_engine.audit_url(
-        url, level=level, include_best_practice=include_best_practice
+        url, level=level, engines=engines, steps=steps,
+        include_best_practice=include_best_practice,
     )
     return _page_payload(result)
 
@@ -96,20 +118,25 @@ async def audit_url(
 async def audit_html(
     html: str,
     level: str = "AA",
+    engines: list[str] | None = None,
+    steps: list[dict] | None = None,
     include_best_practice: bool = False,
 ) -> dict[str, Any]:
     """Audit a raw HTML string or component snippet for WCAG 2.2 accessibility.
 
-    Renders the HTML in headless Chromium (no network fetch) and audits it. Useful
-    for testing templates or components in isolation, e.g. in CI before deploy.
+    Renders the HTML in headless Chromium (no network fetch) and audits it with the
+    chosen engines. Useful for testing templates/components in CI.
 
     Args:
         html: The HTML markup to audit.
-        level: WCAG conformance level: "A", "AA" (default) or "AAA".
+        level: WCAG level: "A", "AA" (default) or "AAA".
+        engines: Subset of ["axe","pa11y","lighthouse","ibm"]. Defaults to ["axe"].
+        steps: Optional interactions before auditing (see audit_url).
         include_best_practice: Also run axe "best-practice" rules.
     """
     result = await audit_engine.audit_html(
-        html, level=level, include_best_practice=include_best_practice
+        html, level=level, engines=engines, steps=steps,
+        include_best_practice=include_best_practice,
     )
     return _page_payload(result)
 
@@ -120,38 +147,169 @@ async def audit_site(
     max_pages: int = 20,
     max_depth: int = 2,
     level: str = "AA",
+    engines: list[str] | None = None,
     include_best_practice: bool = False,
 ) -> dict[str, Any]:
     """Crawl a site (same origin) and audit each page for WCAG 2.2 accessibility.
 
-    Performs a breadth-first crawl from the start URL, staying on the same origin,
-    and audits every page up to the page/depth limits. Returns per-page results and
-    an aggregated service-level GDS compliance summary.
+    Breadth-first crawl from the start URL, auditing each page with the chosen
+    engines. Returns per-page results and an aggregated service-level GDS summary.
 
     Args:
         url: The start URL to crawl from.
         max_pages: Maximum pages to audit (capped by server config).
         max_depth: Maximum link depth from the start URL (capped by server config).
-        level: WCAG conformance level: "A", "AA" (default) or "AAA".
+        level: WCAG level: "A", "AA" (default) or "AAA".
+        engines: Subset of ["axe","pa11y","lighthouse","ibm"]. Defaults to ["axe"].
         include_best_practice: Also run axe "best-practice" rules.
     """
     result = await audit_engine.audit_site(
-        url,
-        max_pages=max_pages,
-        max_depth=max_depth,
-        level=level,
-        include_best_practice=include_best_practice,
+        url, max_pages=max_pages, max_depth=max_depth, level=level,
+        engines=engines, include_best_practice=include_best_practice,
     )
     return _site_payload(result)
 
 
+# ----------------------------------------------------------------------------- #
+# Interactive navigation (stateful session)
+# ----------------------------------------------------------------------------- #
+
+
+@mcp.tool()
+async def browser_open() -> dict[str, Any]:
+    """Open a new stateful browser session and return its session_id.
+
+    Use the session_id with browser_navigate / browser_click / browser_fill /
+    browser_wait / browser_snapshot / audit_current_page, then browser_close.
+    Lets you audit pages behind logins or multi-step journeys.
+    """
+    session = await session_mod.manager.open()
+    return {"session_id": session.id, "active_sessions": session_mod.manager.count}
+
+
+@mcp.tool()
+async def browser_navigate(session_id: str, url: str) -> dict[str, Any]:
+    """Navigate a session's page to a URL."""
+    session = session_mod.manager.get(session_id)
+    if session is None:
+        return {"error": f"Unknown session_id '{session_id}'. Call browser_open first."}
+    await session.page.goto(url, wait_until="load")
+    return {"session_id": session_id, "url": session.page.url, "title": await session.page.title()}
+
+
+@mcp.tool()
+async def browser_click(session_id: str, selector: str) -> dict[str, Any]:
+    """Click an element (CSS selector) in a session's page."""
+    session = session_mod.manager.get(session_id)
+    if session is None:
+        return {"error": f"Unknown session_id '{session_id}'."}
+    await session.page.click(selector)
+    return {"session_id": session_id, "url": session.page.url}
+
+
+@mcp.tool()
+async def browser_fill(session_id: str, selector: str, value: str) -> dict[str, Any]:
+    """Fill a form field (CSS selector) with a value in a session's page."""
+    session = session_mod.manager.get(session_id)
+    if session is None:
+        return {"error": f"Unknown session_id '{session_id}'."}
+    await session.page.fill(selector, value)
+    return {"session_id": session_id, "url": session.page.url}
+
+
+@mcp.tool()
+async def browser_wait(session_id: str, selector: str = "", ms: int = 0) -> dict[str, Any]:
+    """Wait for a selector to appear, or for a number of milliseconds."""
+    session = session_mod.manager.get(session_id)
+    if session is None:
+        return {"error": f"Unknown session_id '{session_id}'."}
+    if selector:
+        await session.page.wait_for_selector(selector)
+    elif ms:
+        await session.page.wait_for_timeout(ms)
+    return {"session_id": session_id, "url": session.page.url}
+
+
+@mcp.tool()
+async def browser_snapshot(session_id: str) -> dict[str, Any]:
+    """Return the current url, title and visible text of a session's page."""
+    session = session_mod.manager.get(session_id)
+    if session is None:
+        return {"error": f"Unknown session_id '{session_id}'."}
+    text = await session.page.inner_text("body")
+    return {
+        "session_id": session_id,
+        "url": session.page.url,
+        "title": await session.page.title(),
+        "text": text[:4000],
+    }
+
+
+@mcp.tool()
+async def audit_current_page(
+    session_id: str,
+    level: str = "AA",
+    engines: list[str] | None = None,
+    include_best_practice: bool = False,
+) -> dict[str, Any]:
+    """Audit the current (post-interaction) state of a session's page.
+
+    axe-core and IBM see the live interactive state; pa11y and Lighthouse re-load
+    the current URL (so they reflect its initial state).
+
+    Args:
+        session_id: A session from browser_open.
+        level: WCAG level: "A", "AA" (default) or "AAA".
+        engines: Subset of ["axe","pa11y","lighthouse","ibm"]. Defaults to ["axe"].
+        include_best_practice: Also run axe "best-practice" rules.
+    """
+    session = session_mod.manager.get(session_id)
+    if session is None:
+        return {"error": f"Unknown session_id '{session_id}'."}
+    result = await audit_engine.audit_open_page(
+        session.page, level=level, engines=engines,
+        include_best_practice=include_best_practice,
+    )
+    return _page_payload(result)
+
+
+@mcp.tool()
+async def browser_close(session_id: str) -> dict[str, Any]:
+    """Close a stateful browser session and free its resources."""
+    closed = await session_mod.manager.close(session_id)
+    return {"closed": closed, "active_sessions": session_mod.manager.count}
+
+
+# ----------------------------------------------------------------------------- #
+# Catalogue / reporting tools
+# ----------------------------------------------------------------------------- #
+
+
+@mcp.tool()
+def list_engines() -> dict[str, Any]:
+    """List the available audit engines and whether the Node engines are installed."""
+    return {
+        "engines": {
+            "axe": {"language": "python", "available": True,
+                    "description": "Deque axe-core, WCAG 2.2 tags (in-process)."},
+            "pa11y": {"language": "node", "available": config.node_engines_available(),
+                      "description": "pa11y with HTML_CodeSniffer + axe runners."},
+            "lighthouse": {"language": "node", "available": config.node_engines_available(),
+                           "description": "Google Lighthouse accessibility category."},
+            "ibm": {"language": "node", "available": config.node_engines_available(),
+                    "description": "IBM Equal Access (needs egress to its rule archive)."},
+        },
+        "default_engines": config.DEFAULT_ENGINES,
+        "node_runner_installed": config.node_engines_available(),
+    }
+
+
 @mcp.tool()
 def list_wcag_rules(version: str = "2.2", level: str = "AA") -> dict[str, Any]:
-    """List the WCAG success criteria this server checks, with automation coverage.
+    """List the WCAG success criteria checked, with automation coverage.
 
-    Returns each criterion's number, name, level, whether it is fully/partially/not
-    automatable, whether it is new in WCAG 2.2, and its W3C Understanding URL. Use
-    this to see what automated auditing can and cannot verify.
+    Returns each criterion's number, name, level, automation (full/partial/manual),
+    whether it is new in WCAG 2.2, and its W3C Understanding URL.
 
     Args:
         version: WCAG version (informational; this server targets 2.2).
@@ -173,6 +331,22 @@ def list_wcag_rules(version: str = "2.2", level: str = "AA") -> dict[str, Any]:
 
 
 @mcp.tool()
+def list_axe_rules(wcag_only: bool = False) -> dict[str, Any]:
+    """List the axe-core rules, each of which is also exposed as its own tool.
+
+    Args:
+        wcag_only: If true, only rules tagged with a WCAG conformance level.
+    """
+    rules = axe_rules.wcag_rules() if wcag_only else axe_rules.all_rules()
+    return {
+        "axe_version": axe_rules.axe_version(),
+        "per_rule_tools_enabled": config.PER_RULE_TOOLS,
+        "total": len(rules),
+        "rules": [r.to_dict() for r in rules],
+    }
+
+
+@mcp.tool()
 async def generate_accessibility_statement(
     audit_id: str = "",
     url: str = "",
@@ -184,14 +358,12 @@ async def generate_accessibility_statement(
 ) -> dict[str, Any]:
     """Draft a GOV.UK-format accessibility statement from an audit.
 
-    Provide either ``audit_id`` (from a previous audit_* call this session) or a
-    ``url`` to audit fresh. Returns a Markdown statement following the GDS model
-    structure, with placeholders for details the service team must complete.
+    Provide either audit_id (from a previous audit tool call) or url (to audit now).
 
     Args:
         audit_id: Id returned by a previous audit tool call.
         url: URL to audit now if no audit_id is given.
-        service_name: Name of the service (fills the statement heading).
+        service_name: Name of the service (statement heading).
         organisation: Organisation running the website.
         contact_email: Accessibility contact email.
         website_url: The website/service URL the statement covers.
@@ -211,18 +383,56 @@ async def generate_accessibility_statement(
 
     summary = gds_summary.summary_from(result)
     statement = gds_summary.generate_statement(
-        summary,
-        service_name=service_name,
-        organisation=organisation,
-        contact_email=contact_email,
-        website_url=website_url,
-        audit_date=audit_date,
+        summary, service_name=service_name, organisation=organisation,
+        contact_email=contact_email, website_url=website_url, audit_date=audit_date,
     )
     return {
         "status": summary.status.value,
         "statement_markdown": statement,
         "gds_summary": gds_summary.render_summary(summary),
     }
+
+
+# ----------------------------------------------------------------------------- #
+# Per-axe-rule tools (one MCP tool per axe-core rule)
+# ----------------------------------------------------------------------------- #
+
+
+def _make_rule_tool(rule: axe_rules.AxeRule):
+    async def tool(url: str = "", html: str = "", session_id: str = "") -> dict[str, Any]:
+        if session_id:
+            session = session_mod.manager.get(session_id)
+            if session is None:
+                return {"error": f"Unknown session_id '{session_id}'."}
+            result = await audit_engine.audit_rule_on_page(session.page, rule.rule_id)
+        elif url:
+            result = await audit_engine.audit_rule(rule.rule_id, url=url)
+        elif html:
+            result = await audit_engine.audit_rule(rule.rule_id, html=html)
+        else:
+            return {"error": "Provide one of: url, html, or session_id."}
+        return _page_payload(result)
+
+    tool.__name__ = rule.tool_name
+    return tool
+
+
+def _register_per_rule_tools() -> int:
+    if not config.PER_RULE_TOOLS:
+        return 0
+    count = 0
+    for rule in axe_rules.all_rules():
+        crit = ", ".join(rule.wcag_criteria) or "no WCAG mapping"
+        description = (
+            f"Check ONLY the axe-core rule '{rule.rule_id}' (WCAG {crit}). "
+            f"{rule.help}. Provide one of: url, html, or session_id."
+        )
+        mcp.add_tool(_make_rule_tool(rule), name=rule.tool_name, description=description)
+        count += 1
+    return count
+
+
+_PER_RULE_COUNT = _register_per_rule_tools()
 
 
 def main() -> None:

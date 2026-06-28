@@ -18,6 +18,31 @@ from playwright.async_api import Browser, Page, Playwright, async_playwright
 from accessibility_mcp import config
 
 
+async def apply_steps(page: Page, steps: list[dict] | None) -> None:
+    """Apply a list of interaction steps to a page before auditing.
+
+    Each step is ``{"action": ..., "selector": ..., "value": ..., "ms": ...}``.
+    Supported actions: navigate, click, fill, wait (by selector or ms), press.
+    Used by both the bundled audit tools and the stateful navigation session.
+    """
+    for step in steps or []:
+        action = step.get("action")
+        selector = step.get("selector")
+        value = step.get("value")
+        if action == "navigate" and value:
+            await page.goto(value, wait_until="load")
+        elif action == "click" and selector:
+            await page.click(selector)
+        elif action == "fill" and selector:
+            await page.fill(selector, value or "")
+        elif action == "press" and selector:
+            await page.press(selector, value or "Enter")
+        elif action == "wait" and selector:
+            await page.wait_for_selector(selector)
+        elif action == "wait" and step.get("ms"):
+            await page.wait_for_timeout(int(step["ms"]))
+
+
 class BrowserSession:
     """Manages a reusable headless Chromium instance."""
 
@@ -71,6 +96,20 @@ class BrowserSession:
         finally:
             with contextlib.suppress(Exception):
                 await context.close()
+
+    async def new_persistent_page(self):
+        """Create a context + page that persist until explicitly closed.
+
+        Unlike :meth:`new_page`, this does not auto-dispose — used by the stateful
+        interactive navigation session. Returns ``(context, page)``.
+        """
+        if self._browser is None:
+            await self.start()
+        assert self._browser is not None
+        context = await self._browser.new_context(user_agent=config.USER_AGENT)
+        page = await context.new_page()
+        page.set_default_timeout(config.PAGE_TIMEOUT_MS)
+        return context, page
 
     async def __aenter__(self) -> "BrowserSession":
         await self.start()

@@ -67,25 +67,42 @@ def _finding_from_axe(rule: dict, outcome: Outcome) -> Finding:
     )
 
 
+def _dedupe_key(f: Finding) -> tuple:
+    first_target = f.nodes[0].target[0] if (f.nodes and f.nodes[0].target) else ""
+    return (f.source, f.id, first_target)
+
+
 def build_page_audit(
     *,
     target: str,
     level: str,
     axe_results: dict,
     govuk_findings: list[Finding],
+    extra_findings: list[Finding] | None = None,
+    engines_used: list[str] | None = None,
+    engine_errors: dict[str, str] | None = None,
     axe_version: str = "unknown",
     error: str | None = None,
 ) -> PageAudit:
-    """Assemble a PageAudit from axe output + GOV.UK findings."""
+    """Assemble a PageAudit from axe output, GOV.UK findings and other engines.
+
+    ``extra_findings`` are already-normalised findings from the Node engines
+    (pa11y / Lighthouse / IBM). All findings keep their ``source`` so multi-engine
+    results stay attributable; exact duplicates (same source, rule id, selector)
+    are dropped.
+    """
     if error is not None:
-        return PageAudit(target=target, level=level, axe_version=axe_version, error=error)
+        return PageAudit(
+            target=target, level=level, axe_version=axe_version, error=error,
+            engines_used=engines_used or [], engine_errors=engine_errors or {},
+        )
 
     violations = [_finding_from_axe(r, Outcome.FAIL) for r in axe_results.get("violations", [])]
     needs_review = [_finding_from_axe(r, Outcome.NEEDS_REVIEW) for r in axe_results.get("incomplete", [])]
     passes = [_finding_from_axe(r, Outcome.PASS) for r in axe_results.get("passes", [])]
 
-    # Fold in GOV.UK custom checks by outcome.
-    for f in govuk_findings:
+    # Fold in GOV.UK custom checks and other-engine findings by outcome.
+    for f in [*govuk_findings, *(extra_findings or [])]:
         if f.outcome is Outcome.FAIL:
             violations.append(f)
         elif f.outcome is Outcome.NEEDS_REVIEW:
@@ -93,13 +110,26 @@ def build_page_audit(
         else:
             passes.append(f)
 
+    # Drop exact duplicates within each bucket.
+    def _dedupe(items: list[Finding]) -> list[Finding]:
+        seen: set[tuple] = set()
+        out: list[Finding] = []
+        for f in items:
+            key = _dedupe_key(f)
+            if key not in seen:
+                seen.add(key)
+                out.append(f)
+        return out
+
     return PageAudit(
         target=target,
         level=level,
         axe_version=axe_version,
-        violations=violations,
-        needs_review=needs_review,
-        passes=passes,
+        engines_used=engines_used or ["axe"],
+        engine_errors=engine_errors or {},
+        violations=_dedupe(violations),
+        needs_review=_dedupe(needs_review),
+        passes=_dedupe(passes),
     )
 
 

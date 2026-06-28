@@ -1,0 +1,17 @@
+{
+  "name": "accessibility-mcp-engines",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Node engine runner for the Accessibility MCP server (pa11y, Lighthouse, IBM Equal Access).",
+  "scripts": {
+    "postinstall": "node -e \"console.log('engines installed')\""
+  },
+  "dependencies": {
+    "accessibility-checker": "^4.0.0",
+    "chrome-launcher": "^1.1.0",
+    "lighthouse": "^13.0.0",
+    "pa11y": "^9.0.0",
+    "playwright-core": "^1.40.0"
+  }
+}

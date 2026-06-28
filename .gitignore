@@ -19,6 +19,12 @@ env/
 .coverage
 htmlcov/
 
+# Node engine runner deps (installed via engines_node/setup.sh)
+accessibility_mcp/engines_node/node_modules/
+
+# IBM Equal Access scan output
+/tmp/accessibility-mcp-ibm/
+
 # OS / editor
 .DS_Store
 *.swp

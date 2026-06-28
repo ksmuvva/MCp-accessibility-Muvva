@@ -84,6 +84,11 @@ class PageAudit(BaseModel):
     axe_version: str = "unknown"
     error: str | None = Field(None, description="Set when the audit could not run")
 
+    engines_used: list[str] = Field(default_factory=list, description="Engines that ran")
+    engine_errors: dict[str, str] = Field(
+        default_factory=dict, description="Per-engine failures (engine -> message)"
+    )
+
     violations: list[Finding] = Field(default_factory=list)
     needs_review: list[Finding] = Field(default_factory=list)
     passes: list[Finding] = Field(default_factory=list)

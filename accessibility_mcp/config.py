@@ -140,3 +140,29 @@ PROXY_SERVER: str | None = _discover_proxy()
 
 # Hosts that must bypass the proxy (Playwright wants a comma-separated list).
 PROXY_BYPASS: str = os.environ.get("NO_PROXY") or os.environ.get("no_proxy") or ""
+
+
+# --------------------------------------------------------------------------- #
+# Engines
+# --------------------------------------------------------------------------- #
+
+import shutil  # noqa: E402
+
+# Supported audit engines. axe-core runs in-process (Python); the rest run in the
+# Node engine-runner subprocess.
+ALL_ENGINES = ["axe", "pa11y", "lighthouse", "ibm"]
+NODE_ENGINES = ["pa11y", "lighthouse", "ibm"]
+DEFAULT_ENGINES = ["axe"]
+
+# Node engine-runner location.
+NODE_ENGINES_DIR = Path(__file__).parent / "engines_node"
+NODE_RUNNER = NODE_ENGINES_DIR / "runner.mjs"
+NODE_EXECUTABLE = os.environ.get("ACCESSIBILITY_MCP_NODE") or shutil.which("node")
+
+# Whether to register one MCP tool per axe rule (~100 tools). On by default.
+PER_RULE_TOOLS = os.environ.get("ACCESSIBILITY_MCP_PER_RULE_TOOLS", "1") not in ("0", "false", "")
+
+
+def node_engines_available() -> bool:
+    """True if Node and the installed engine runner are present."""
+    return bool(NODE_EXECUTABLE) and NODE_RUNNER.exists() and (NODE_ENGINES_DIR / "node_modules").is_dir()
