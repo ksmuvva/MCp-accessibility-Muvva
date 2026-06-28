@@ -171,6 +171,89 @@ async def audit_site(
 
 
 # ----------------------------------------------------------------------------- #
+# Dedicated single-engine tools
+# ----------------------------------------------------------------------------- #
+
+
+async def _audit_single_engine(
+    engine: str,
+    *,
+    url: str,
+    html: str,
+    session_id: str,
+    level: str,
+    include_best_practice: bool = False,
+) -> dict[str, Any]:
+    """Audit a url / html / session_id with exactly one engine."""
+    if session_id:
+        session = session_mod.manager.get(session_id)
+        if session is None:
+            return {"error": f"Unknown session_id '{session_id}'."}
+        result = await audit_engine.audit_open_page(
+            session.page, level=level, engines=[engine],
+            include_best_practice=include_best_practice,
+        )
+    elif url:
+        result = await audit_engine.audit_url(
+            url, level=level, engines=[engine], include_best_practice=include_best_practice,
+        )
+    elif html:
+        result = await audit_engine.audit_html(
+            html, level=level, engines=[engine], include_best_practice=include_best_practice,
+        )
+    else:
+        return {"error": "Provide one of: url, html, or session_id."}
+    return _page_payload(result)
+
+
+@mcp.tool()
+async def audit_axe(
+    url: str = "", html: str = "", session_id: str = "",
+    level: str = "AA", include_best_practice: bool = False,
+) -> dict[str, Any]:
+    """Audit with the axe-core engine only (plus GOV.UK checks).
+
+    Provide one of: url, html, or session_id. axe-core is the in-process engine
+    with explicit WCAG 2.2 rule tags.
+    """
+    return await _audit_single_engine(
+        "axe", url=url, html=html, session_id=session_id, level=level,
+        include_best_practice=include_best_practice,
+    )
+
+
+@mcp.tool()
+async def audit_pa11y(url: str = "", html: str = "", session_id: str = "", level: str = "AA") -> dict[str, Any]:
+    """Audit with the pa11y engine only (HTML_CodeSniffer + axe runners).
+
+    Provide one of: url, html, or session_id. Requires the Node engine runner
+    (accessibility_mcp/engines_node/setup.sh).
+    """
+    return await _audit_single_engine("pa11y", url=url, html=html, session_id=session_id, level=level)
+
+
+@mcp.tool()
+async def audit_lighthouse(url: str = "", html: str = "", session_id: str = "", level: str = "AA") -> dict[str, Any]:
+    """Audit with the Google Lighthouse accessibility engine only.
+
+    Provide one of: url, html, or session_id. Lighthouse audits by URL (it reloads
+    the page). Requires the Node engine runner.
+    """
+    return await _audit_single_engine("lighthouse", url=url, html=html, session_id=session_id, level=level)
+
+
+@mcp.tool()
+async def audit_ibm(url: str = "", html: str = "", session_id: str = "", level: str = "AA") -> dict[str, Any]:
+    """Audit with the IBM Equal Access engine only.
+
+    Provide one of: url, html, or session_id. Requires the Node engine runner and
+    network egress to the IBM rule archive (cdn.jsdelivr.net); otherwise returns a
+    structured engine-error.
+    """
+    return await _audit_single_engine("ibm", url=url, html=html, session_id=session_id, level=level)
+
+
+# ----------------------------------------------------------------------------- #
 # Interactive navigation (stateful session)
 # ----------------------------------------------------------------------------- #
 

@@ -61,6 +61,26 @@ async def test_single_rule_audit(fixture_server):
 
 
 @pytest.mark.asyncio
+async def test_dedicated_axe_tool(fixture_server):
+    from accessibility_mcp import server
+    payload = await server.audit_axe(url=f"{fixture_server}/failing.html")
+    assert payload["engines_used"] == ["axe"]
+    assert payload["json"]["violations"]
+
+
+@node_required
+@pytest.mark.asyncio
+async def test_dedicated_pa11y_tool(fixture_server):
+    from accessibility_mcp import server
+    payload = await server.audit_pa11y(url=f"{fixture_server}/failing.html")
+    assert payload["engines_used"] == ["pa11y"]
+    # axe-core must NOT have run; GOV.UK checks always run as a complementary layer.
+    sources = {v["source"] for v in payload["json"]["violations"]}
+    assert "axe-core" not in sources
+    assert sources <= {"pa11y", "govuk"}
+
+
+@pytest.mark.asyncio
 async def test_interactive_session_flow(fixture_server):
     manager = session_mod.SessionManager()
     session = await manager.open()

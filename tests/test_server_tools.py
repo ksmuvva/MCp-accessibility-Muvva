@@ -14,6 +14,8 @@ async def test_all_tool_categories_registered():
 
     # Bundled audits
     assert {"audit_url", "audit_html", "audit_site"} <= names
+    # Dedicated single-engine tools
+    assert {"audit_axe", "audit_pa11y", "audit_lighthouse", "audit_ibm"} <= names
     # Navigation
     assert {
         "browser_open", "browser_navigate", "browser_click", "browser_fill",

@@ -32,6 +32,15 @@ fine-grained checks.
 | `audit_html` | Audit a raw HTML string / component snippet (no network fetch). |
 | `audit_site` | Crawl a site (same origin) and audit each page; aggregated summary. |
 
+**Dedicated single-engine audits** (take `url`, `html` or `session_id`):
+
+| Tool | Description |
+| --- | --- |
+| `audit_axe` | axe-core only (plus GOV.UK checks). |
+| `audit_pa11y` | pa11y only (HTML_CodeSniffer + axe runners). |
+| `audit_lighthouse` | Lighthouse accessibility only. |
+| `audit_ibm` | IBM Equal Access only. |
+
 **Interactive navigation (stateful browser session):**
 
 | Tool | Description |
