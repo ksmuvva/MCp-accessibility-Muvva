@@ -35,7 +35,13 @@ packages = [
 ]
 
 [tool.setuptools.package-data]
-accessibility_mcp = ["vendor/*.js"]
+accessibility_mcp = [
+    "vendor/*.js",
+    "vendor/*.json",
+    "engines_node/*.mjs",
+    "engines_node/*.json",
+    "engines_node/*.sh",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

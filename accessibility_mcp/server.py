@@ -337,8 +337,9 @@ async def audit_current_page(
 ) -> dict[str, Any]:
     """Audit the current (post-interaction) state of a session's page.
 
-    axe-core and IBM see the live interactive state; pa11y and Lighthouse re-load
-    the current URL (so they reflect its initial state).
+    axe-core runs against the live page; pa11y, Lighthouse and IBM audit a
+    serialised snapshot of the current DOM, so interaction state (filled fields,
+    opened modals, dynamic content) is preserved.
 
     Args:
         session_id: A session from browser_open.

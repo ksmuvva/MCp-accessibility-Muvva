@@ -63,11 +63,14 @@ function stepsToPa11yActions(steps = []) {
   return actions;
 }
 
+const PA11Y_STANDARD = { A: "WCAG2A", AA: "WCAG2AA", AAA: "WCAG2AAA" };
+
 async function runPa11y(input) {
   const pa11y = require("pa11y");
+  const standard = PA11Y_STANDARD[(input.level || "AA").toUpperCase()] || "WCAG2AA";
   const res = await pa11y(targetUrl(input), {
     runners: ["htmlcs", "axe"],
-    standard: "WCAG2AA",
+    standard,
     includeWarnings: true,
     timeout: input.timeoutMs ?? 30000,
     actions: stepsToPa11yActions(input.steps),

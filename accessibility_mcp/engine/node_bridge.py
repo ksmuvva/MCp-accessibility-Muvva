@@ -30,6 +30,7 @@ async def run_node_engines(
     html: str | None = None,
     steps: list[dict] | None = None,
     cookies: list[dict] | None = None,
+    level: str = "AA",
     timeout_ms: int | None = None,
 ) -> dict:
     """Run the requested Node engines and return ``{"engines": {name: result}}``."""
@@ -50,6 +51,7 @@ async def run_node_engines(
         "engines": engines,
         "steps": steps or [],
         "cookies": cookies or [],
+        "level": level,
         "timeoutMs": timeout_ms,
     }
     if url:

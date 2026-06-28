@@ -30,13 +30,14 @@ async def _run_node_engines(
     html: str | None,
     steps: list[dict] | None,
     cookies: list[dict] | None,
+    level: str,
 ) -> tuple[list[Finding], dict[str, str]]:
     """Run requested Node engines and return (findings, engine_errors)."""
     node_engines = [e for e in engines if e in config.NODE_ENGINES]
     if not node_engines:
         return [], {}
     raw = await node_bridge.run_node_engines(
-        node_engines, url=url, html=html, steps=steps, cookies=cookies
+        node_engines, url=url, html=html, steps=steps, cookies=cookies, level=level
     )
     findings: list[Finding] = []
     errors: dict[str, str] = {}
@@ -73,7 +74,7 @@ async def _audit_loaded_page(
 
     cookies = await page.context.cookies()
     extra_findings, engine_errors = await _run_node_engines(
-        engines, url=url, html=html, steps=steps, cookies=cookies
+        engines, url=url, html=html, steps=steps, cookies=cookies, level=level
     )
 
     return builder.build_page_audit(
@@ -154,14 +155,18 @@ async def audit_open_page(
 ) -> PageAudit:
     """Audit an already-open, possibly post-interaction page (stateful session).
 
-    Node engines (pa11y/Lighthouse) re-load the current URL, so they reflect the
-    URL's initial state; axe-core and IBM see the live interactive state.
+    axe-core runs against the live page. The Node engines (pa11y / Lighthouse /
+    IBM) audit a serialised snapshot of the *current* DOM — so post-interaction
+    state (filled fields, opened modals/accordions, dynamically added content) is
+    preserved, rather than reloading the URL and losing it.
     """
     engines = _resolve_engines(engines)
+    # Capture the live DOM so the Node engines see the post-interaction state.
+    snapshot = await page.content()
     return await _audit_loaded_page(
         page, target=page.url, level=level,
         include_best_practice=include_best_practice,
-        engines=engines, steps=None, url=page.url, html=None,
+        engines=engines, steps=None, url=None, html=snapshot,
     )
 
 
