@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "accessibility": {
+      "command": "accessibility-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}
