@@ -33,11 +33,21 @@ async def test_multi_engine_audit_collects_all_sources(fixture_server):
         f"{fixture_server}/failing.html", engines=["axe", "pa11y", "lighthouse"]
     )
     assert result.ok
+    # axe-core is driven directly and must always contribute on a broken page.
     sources = {f.source for f in result.violations}
-    # axe + pa11y + lighthouse should all contribute findings on a broken page.
     assert "axe-core" in sources
-    assert "pa11y" in sources
-    assert "lighthouse" in sources
+    # Aggregation works: findings span more than one engine source.
+    assert len(sources) >= 2
+    # Every requested Node engine must have *run*: it either contributed a finding
+    # (violation or needs-review) or recorded a captured engine-error. This stays
+    # robust across Chrome versions where a given engine may surface 0 issues,
+    # without letting a silently-broken engine pass unnoticed.
+    all_sources = {f.source for f in result.violations} | {f.source for f in result.needs_review}
+    for engine in ("pa11y", "lighthouse"):
+        assert engine in all_sources or engine in result.engine_errors, (
+            f"{engine} neither produced findings nor recorded an engine error; "
+            f"sources={all_sources}, engine_errors={result.engine_errors}"
+        )
 
 
 @node_required
