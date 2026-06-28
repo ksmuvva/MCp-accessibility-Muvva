@@ -174,6 +174,13 @@ If you installed into a virtualenv, point `command` at that venv's executable, e
 | --- | --- | --- |
 | `ACCESSIBILITY_MCP_CHROMIUM` | auto-detect | Explicit Chromium executable path. |
 | `PLAYWRIGHT_BROWSERS_PATH` | (Playwright default) | Searched for an installed Chromium build. |
+
+> **Chromium auto-detection.** MCP clients spawn the server with a *sanitised*
+> environment (typically just `HOME`/`PATH`/`SHELL`/`TERM`), so
+> `PLAYWRIGHT_BROWSERS_PATH` is usually stripped before the server starts. When it
+> is absent, the server still probes well-known default install locations
+> (`/opt/pw-browsers`, `~/.cache/ms-playwright`) so audits work out of the box. Set
+> `ACCESSIBILITY_MCP_CHROMIUM` to override discovery explicitly.
 | `ACCESSIBILITY_MCP_PROXY` / `HTTPS_PROXY` | none | Outbound proxy for `audit_url` / `audit_site`. |
 | `ACCESSIBILITY_MCP_PAGE_TIMEOUT_MS` | `30000` | Page load timeout. |
 | `ACCESSIBILITY_MCP_MAX_PAGES` | `20` | Default crawl page limit. |

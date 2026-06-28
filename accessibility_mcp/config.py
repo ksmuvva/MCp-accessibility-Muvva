@@ -56,32 +56,56 @@ def axe_tags(level: str = DEFAULT_LEVEL, include_best_practice: bool = False) ->
 # --------------------------------------------------------------------------- #
 
 
+def _chromium_under(base: str) -> str | None:
+    """Return the newest Chromium executable under a Playwright browsers dir."""
+    if not base or not Path(base).is_dir():
+        return None
+    # Prefer the full chromium build; fall back to the headless shell.
+    patterns = [
+        os.path.join(base, "chromium-*", "chrome-linux", "chrome"),
+        os.path.join(base, "chromium_headless_shell-*", "chrome-linux", "headless_shell"),
+        os.path.join(base, "chromium-*", "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
+    ]
+    for pattern in patterns:
+        matches = sorted(glob.glob(pattern))
+        if matches:
+            return matches[-1]  # highest build number
+    return None
+
+
 def _discover_chromium() -> str | None:
     """Locate a Chromium executable.
 
     Order of precedence:
       1. ACCESSIBILITY_MCP_CHROMIUM env var (explicit override).
-      2. A chromium build under PLAYWRIGHT_BROWSERS_PATH (the managed remote
-         environment pre-installs Chromium there but the pinned playwright pip
-         version may differ, so we point at the binary directly).
-      3. None -> let Playwright resolve its own managed browser.
+      2. A chromium build under PLAYWRIGHT_BROWSERS_PATH.
+      3. A chromium build under well-known default install locations.
+      4. None -> let Playwright resolve its own managed browser.
+
+    Steps 2-3 matter because MCP clients spawn the server with a *sanitised*
+    environment (only HOME/PATH/SHELL/TERM by default), so PLAYWRIGHT_BROWSERS_PATH
+    is usually stripped before the server starts. Without the default-location
+    fallback the server would fail to find the pre-installed Chromium and every
+    audit would error out, even though a usable browser is right there on disk.
     """
     override = os.environ.get("ACCESSIBILITY_MCP_CHROMIUM")
     if override and Path(override).exists():
         return override
 
-    browsers_path = os.environ.get("PLAYWRIGHT_BROWSERS_PATH")
-    if browsers_path and Path(browsers_path).is_dir():
-        # Prefer the full chromium build; fall back to the headless shell.
-        patterns = [
-            os.path.join(browsers_path, "chromium-*", "chrome-linux", "chrome"),
-            os.path.join(browsers_path, "chromium_headless_shell-*", "chrome-linux", "headless_shell"),
-            os.path.join(browsers_path, "chromium-*", "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
-        ]
-        for pattern in patterns:
-            matches = sorted(glob.glob(pattern))
-            if matches:
-                return matches[-1]  # highest build number
+    # Candidate browser dirs, in priority order. The env var (when present) wins,
+    # then the managed-remote default, then Playwright's standard cache locations.
+    home = os.environ.get("HOME", str(Path.home()))
+    candidates = [
+        os.environ.get("PLAYWRIGHT_BROWSERS_PATH"),
+        "/opt/pw-browsers",
+        os.path.join(home, ".cache", "ms-playwright"),
+        "/root/.cache/ms-playwright",
+        os.path.join(home, "Library", "Caches", "ms-playwright"),  # macOS
+    ]
+    for base in candidates:
+        found = _chromium_under(base) if base else None
+        if found:
+            return found
     return None
 
 
