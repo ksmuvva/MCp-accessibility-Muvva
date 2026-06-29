@@ -12,7 +12,7 @@ from accessibility_mcp import audit, config
 from accessibility_mcp.engine import session as session_mod
 
 node_required = pytest.mark.skipif(
-    not config.node_engines_available(),
+    not (bool(config.NODE_EXECUTABLE) and config.NODE_RUNNER.exists() and (config.NODE_ENGINES_DIR / "node_modules").is_dir()),
     reason="Node engines not installed (run accessibility_mcp/engines_node/setup.sh)",
 )
 

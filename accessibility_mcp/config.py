@@ -68,10 +68,12 @@ def _chromium_under(base: str) -> str | None:
         if not base or not Path(base).is_dir():
             return None
         # Prefer the full chromium build; fall back to the headless shell.
+        # Covers Linux, macOS and Windows layouts.
         patterns = [
             os.path.join(base, "chromium-*", "chrome-linux", "chrome"),
             os.path.join(base, "chromium_headless_shell-*", "chrome-linux", "headless_shell"),
             os.path.join(base, "chromium-*", "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
+            os.path.join(base, "chromium-*", "chrome-win", "chrome.exe"),
         ]
         for pattern in patterns:
             matches = sorted(glob.glob(pattern))
@@ -104,12 +106,14 @@ def _discover_chromium() -> str | None:
     # Candidate browser dirs, in priority order. The env var (when present) wins,
     # then the managed-remote default, then Playwright's standard cache locations.
     home = os.environ.get("HOME", str(Path.home()))
+    local_appdata = os.environ.get("LOCALAPPDATA")
     candidates = [
         os.environ.get("PLAYWRIGHT_BROWSERS_PATH"),
         "/opt/pw-browsers",
         os.path.join(home, ".cache", "ms-playwright"),
         "/root/.cache/ms-playwright",
         os.path.join(home, "Library", "Caches", "ms-playwright"),  # macOS
+        os.path.join(local_appdata, "ms-playwright") if local_appdata else None,  # Windows
     ]
     for base in candidates:
         found = _chromium_under(base) if base else None
@@ -126,21 +130,16 @@ CHROMIUM_EXECUTABLE: str | None = _discover_chromium()
 # --------------------------------------------------------------------------- #
 
 
-def _int_env(name: str, default: int) -> int:
-    try:
-        return int(os.environ.get(name, default))
-    except (TypeError, ValueError):
-        return default
 
 
 # Page navigation / load timeout in milliseconds.
-PAGE_TIMEOUT_MS = _int_env("ACCESSIBILITY_MCP_PAGE_TIMEOUT_MS", 30_000)
+PAGE_TIMEOUT_MS = int(os.environ.get("ACCESSIBILITY_MCP_PAGE_TIMEOUT_MS", 30_000) or 30_000)
 
 # Crawl limits (audit_site).
-DEFAULT_MAX_PAGES = _int_env("ACCESSIBILITY_MCP_MAX_PAGES", 20)
-MAX_PAGES_CEILING = _int_env("ACCESSIBILITY_MCP_MAX_PAGES_CEILING", 100)
-DEFAULT_MAX_DEPTH = _int_env("ACCESSIBILITY_MCP_MAX_DEPTH", 2)
-MAX_DEPTH_CEILING = _int_env("ACCESSIBILITY_MCP_MAX_DEPTH_CEILING", 5)
+DEFAULT_MAX_PAGES = int(os.environ.get("ACCESSIBILITY_MCP_MAX_PAGES", 20) or 20)
+MAX_PAGES_CEILING = int(os.environ.get("ACCESSIBILITY_MCP_MAX_PAGES_CEILING", 100) or 100)
+DEFAULT_MAX_DEPTH = int(os.environ.get("ACCESSIBILITY_MCP_MAX_DEPTH", 2) or 2)
+MAX_DEPTH_CEILING = int(os.environ.get("ACCESSIBILITY_MCP_MAX_DEPTH_CEILING", 5) or 5)
 
 # A descriptive UA so site owners can identify the auditor in their logs.
 USER_AGENT = os.environ.get(
@@ -155,18 +154,7 @@ USER_AGENT = os.environ.get(
 
 
 def _discover_proxy() -> str | None:
-    """Resolve an outbound HTTP(S) proxy for the browser from the environment.
-
-    Honours ACCESSIBILITY_MCP_PROXY first, then the conventional HTTPS_PROXY /
-    https_proxy / HTTP_PROXY variables. Chromium does not read these automatically,
-    so the browser layer passes the result to Playwright explicitly. Returns None
-    when no proxy is configured (direct connection).
-    """
-    for var in ("ACCESSIBILITY_MCP_PROXY", "HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy"):
-        value = os.environ.get(var)
-        if value:
-            return value
-    return None
+    return next((os.environ.get(v) for v in ("ACCESSIBILITY_MCP_PROXY", "HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy") if os.environ.get(v)), None)
 
 
 PROXY_SERVER: str | None = _discover_proxy()
@@ -190,7 +178,7 @@ DEFAULT_ENGINES = ["axe"]
 # Node engine-runner location.
 NODE_ENGINES_DIR = Path(__file__).parent / "engines_node"
 NODE_RUNNER = NODE_ENGINES_DIR / "runner.mjs"
-NODE_EXECUTABLE = os.environ.get("ACCESSIBILITY_MCP_NODE") or shutil.which("node")
+NODE_EXECUTABLE = "node"  # ponytail: hardcoded - shutil.which discovery overengineering
 
 # Whether to register one MCP tool per axe rule (~100 tools). On by default.
 PER_RULE_TOOLS = os.environ.get("ACCESSIBILITY_MCP_PER_RULE_TOOLS", "1") not in ("0", "false", "")
@@ -202,6 +190,3 @@ GROUP_TOOLS = os.environ.get("ACCESSIBILITY_MCP_GROUP_TOOLS", "1") not in ("0", 
 AUTOMATED_CHECK_TOOLS = os.environ.get("ACCESSIBILITY_MCP_AUTOMATED_CHECK_TOOLS", "1") not in ("0", "false", "")
 
 
-def node_engines_available() -> bool:
-    """True if Node and the installed engine runner are present."""
-    return bool(NODE_EXECUTABLE) and NODE_RUNNER.exists() and (NODE_ENGINES_DIR / "node_modules").is_dir()
