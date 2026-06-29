@@ -4,6 +4,16 @@
       "command": "accessibility-mcp",
       "args": [],
       "env": {}
+    },
+    "sequential-thinking": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "env": {}
     }
   }
 }
