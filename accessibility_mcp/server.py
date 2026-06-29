@@ -9,8 +9,8 @@ Exposes (over stdio):
     browser_open, browser_navigate, browser_click, browser_fill, browser_wait,
     browser_snapshot, audit_current_page, browser_close
 
-  Per-axe-rule tools (~100, one per axe-core rule) — optional, on by default:
-    axe_<rule_id>, e.g. axe_color_contrast
+  Per-axe-rule auditing (single generic tool):
+    axe_check_rule(rule_id) — run one axe-core rule; see list_axe_rules for IDs
 
   Catalogue / reporting:
     list_wcag_rules, list_axe_rules, list_engines, generate_accessibility_statement
