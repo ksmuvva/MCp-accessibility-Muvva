@@ -32,17 +32,12 @@ class InteractiveSession:
 
 
 class SessionManager:
-    """Tracks active interactive sessions, keyed by id, with a bounded count."""
+    """Tracks active interactive sessions, keyed by id."""
 
-    def __init__(self, max_sessions: int = 10) -> None:
+    def __init__(self) -> None:
         self._sessions: dict[str, InteractiveSession] = {}
-        self._max = max_sessions
 
     async def open(self) -> InteractiveSession:
-        if len(self._sessions) >= self._max:
-            # Evict the oldest session to stay bounded.
-            oldest = next(iter(self._sessions))
-            await self.close(oldest)
         session_id = uuid.uuid4().hex[:12]
         session = InteractiveSession(session_id)
         await session.start()
@@ -58,10 +53,6 @@ class SessionManager:
             return False
         await session.close()
         return True
-
-    async def close_all(self) -> None:
-        for session_id in list(self._sessions):
-            await self.close(session_id)
 
     @property
     def count(self) -> int:

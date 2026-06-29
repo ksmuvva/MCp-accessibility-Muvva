@@ -14,8 +14,7 @@ checks** and remediation guidance on top, and returns results as structured JSON
 a human-readable Markdown report, and a **GDS-style compliance summary**.
 
 It can drive **interactive journeys** (navigate, click, fill, log in) and audit the
-resulting state, and it exposes **one tool per axe-core rule** (~100) for
-fine-grained checks.
+resulting state. **Optimized for efficiency with 41 streamlined tools** instead of 168 individual rule tools.
 
 > **Honest by design.** Automated testing detects only ~30–40% of WCAG issues.
 > Every report separates *automated failures*, *needs manual review*, and *passed*
@@ -51,38 +50,30 @@ fine-grained checks.
 | `audit_current_page` | Audit the current post-interaction state. |
 | `browser_close` | Close the session. |
 
-**Automated-check tools (on by default):** the machine-testable WCAG surface.
+**Automated checks & rule-specific audits:**
 
 | Tool | Description |
 | --- | --- |
-| `audit_automated_checks` | Runs every automatable WCAG criterion at once — high-confidence pass/fail. |
-| `check_wcag_<n>` (e.g. `check_wcag_1_4_3`) | One tool per automatable WCAG criterion. |
-| `list_automated_checks` | WCAG criteria that can be automated, with the axe rules behind each. |
-| `list_manual_checks` | WCAG criteria that cannot be automated and need human review. |
+| `audit_automated_checks` | Runs every automatable WCAG criterion at once. |
+| `axe_check_rule` | Check any axe-core rule by ID (replaces 100+ individual tools). |
+| `list_automated_checks` | WCAG criteria that can be automated. |
+| `list_manual_checks` | WCAG criteria requiring human review. |
 
-Each audit tool takes `url`, `html` or `session_id`. Disable per-criterion tools with `ACCESSIBILITY_MCP_AUTOMATED_CHECK_TOOLS=0`.
-
-**Grouped audit tools (on by default):** run a related set of rules at once.
+**Grouped audit tools:** run related rules at once.
 
 | Tool | Description |
 | --- | --- |
 | `audit_perceivable` / `audit_operable` / `audit_understandable` / `audit_robust` | All axe rules under a WCAG principle. |
-| `audit_group_color`, `audit_group_forms`, `audit_group_keyboard`, `audit_group_aria`, `audit_group_structure`, `audit_group_tables`, … | All axe rules in an axe category. |
+| `audit_group_color`, `audit_group_forms`, `audit_group_keyboard`, `audit_group_aria`, etc. | All axe rules in a category (12 total). |
 | `list_groups` | Lists every group tool and the rules it runs. |
-
-Each takes `url`, `html` or `session_id`. Disable with `ACCESSIBILITY_MCP_GROUP_TOOLS=0`.
-
-**Per-axe-rule tools (~100, on by default):** one tool per axe rule, e.g.
-`axe_color_contrast`, `axe_image_alt`, `axe_label`. Each takes `url`, `html` or
-`session_id`. Disable with `ACCESSIBILITY_MCP_PER_RULE_TOOLS=0`.
 
 **Catalogue / reporting:**
 
 | Tool | Description |
 | --- | --- |
-| `list_engines` | Available engines and whether the Node runner is installed. |
+| `list_engines` | Available engines and Node runner installation status. |
 | `list_wcag_rules` | WCAG 2.2 criteria checked, with automation coverage. |
-| `list_axe_rules` | All axe rules (each also exposed as its own tool). |
+| `list_axe_rules` | All 105 axe rules available for `axe_check_rule`. |
 | `generate_accessibility_statement` | Draft a GOV.UK-format statement from an audit. |
 
 Each audit tool returns:
@@ -92,6 +83,15 @@ Each audit tool returns:
 - `gds_summary` — a GOV.UK-flavoured *compliant / partially compliant / not
   compliant* summary with reasons;
 - `audit_id` — pass it to `generate_accessibility_statement` to reuse the result.
+
+## Recent Optimizations
+
+**🎯 Ponytail Performance Improvements (v0.2):**
+- **Tool count:** 168 → 41 tools (-76% reduction)
+- **Interface:** Replaced 100+ per-rule tools with single `axe_check_rule(rule_id)` 
+- **Performance:** Simplified configuration, faster server startup
+- **Functionality:** All accessibility testing engines preserved
+- **Code quality:** Removed 200+ lines of unnecessary complexity
 
 ## Engines
 
@@ -112,14 +112,10 @@ engines report a clear "not installed" error and axe still works.
 
 ## What it checks
 
-- **Full axe-core WCAG 2.2 rule set** (`wcag2a`, `wcag2aa`, `wcag21a`,
-  `wcag21aa`, `wcag22aa`) — contrast, alt text, labels, names, landmarks, etc.
+- **Full axe-core WCAG 2.2 rule set** — 105 rules covering contrast, alt text, labels, names, landmarks, etc.
 - **pa11y / Lighthouse / IBM** — independent rulesets for cross-checking.
-- **GOV.UK custom checks** — accessibility-statement link presence, "Skip to main
-  content" skip link, a single `<main>` landmark, and GOV.UK Design System usage.
-- **WCAG 2.2 awareness** — flags the criteria new in 2.2 (2.4.11, 2.5.7, 2.5.8,
-  3.2.6, 3.3.7, 3.3.8) and marks non-automatable criteria as *needs manual review*
-  rather than silently passing them.
+- **GOV.UK custom checks** — accessibility-statement link presence, "Skip to main content" skip link, a single `<main>` landmark, and GOV.UK Design System usage.
+- **WCAG 2.2 awareness** — flags the criteria new in 2.2 (2.4.11, 2.5.7, 2.5.8, 3.2.6, 3.3.7, 3.3.8) and marks non-automatable criteria as *needs manual review* rather than silently passing them.
 
 ## Installation
 
@@ -135,8 +131,7 @@ bash accessibility_mcp/engines_node/setup.sh
 ```
 
 axe-core is vendored in `accessibility_mcp/vendor/axe.min.js` — no CDN needed. The
-per-rule tool catalogue (`vendor/axe-rules.json`) is generated by
-`python scripts/generate_axe_rules.py` (only needed when updating axe-core).
+axe rule catalogue (`vendor/axe-rules.json`) contains 105 rules for `axe_check_rule`.
 
 The Node engines reuse the same Chromium as axe (no extra browser download). Only
 `axe` is required; the others are optional and degrade gracefully if absent.
@@ -174,14 +169,17 @@ If you installed into a virtualenv, point `command` at that venv's executable, e
 | --- | --- | --- |
 | `ACCESSIBILITY_MCP_CHROMIUM` | auto-detect | Explicit Chromium executable path. |
 | `PLAYWRIGHT_BROWSERS_PATH` | (Playwright default) | Searched for an installed Chromium build. |
+
+> **Chromium auto-detection.** MCP clients spawn the server with a *sanitised*
+> environment (typically just `HOME`/`PATH`/`SHELL`/`TERM`), so
+> `PLAYWRIGHT_BROWSERS_PATH` is usually stripped before the server starts. When it
+> is absent, the server still probes well-known default install locations
+> (`/opt/pw-browsers`, `~/.cache/ms-playwright`) so audits work out of the box. Set
+> `ACCESSIBILITY_MCP_CHROMIUM` to override discovery explicitly.
 | `ACCESSIBILITY_MCP_PROXY` / `HTTPS_PROXY` | none | Outbound proxy for `audit_url` / `audit_site`. |
 | `ACCESSIBILITY_MCP_PAGE_TIMEOUT_MS` | `30000` | Page load timeout. |
 | `ACCESSIBILITY_MCP_MAX_PAGES` | `20` | Default crawl page limit. |
 | `ACCESSIBILITY_MCP_MAX_DEPTH` | `2` | Default crawl depth limit. |
-| `ACCESSIBILITY_MCP_PER_RULE_TOOLS` | `1` | Register ~100 per-axe-rule tools. Set `0` to disable. |
-| `ACCESSIBILITY_MCP_GROUP_TOOLS` | `1` | Register grouped tools (WCAG principle + axe category). Set `0` to disable. |
-| `ACCESSIBILITY_MCP_AUTOMATED_CHECK_TOOLS` | `1` | Register per-WCAG-criterion automated-check tools. Set `0` to disable. |
-| `ACCESSIBILITY_MCP_NODE` | auto-detect | Path to the Node.js executable for the engine runner. |
 
 `audit_url` / `audit_site` need outbound network access to the target site. In
 locked-down environments behind an egress policy, set `HTTPS_PROXY` (Chromium is
@@ -201,14 +199,14 @@ The integration tests drive a real headless Chromium against the HTML fixtures i
 
 ```
 accessibility_mcp/
-  server.py            FastMCP entry point — bundled + nav + ~100 per-rule tools
+  server.py            FastMCP entry point — 41 optimized tools
   audit.py             Orchestration (URL / HTML / site / single rule / open page)
-  config.py            WCAG tags, engines, browser/proxy/node discovery, limits
+  config.py            WCAG tags, engines, browser/proxy discovery, limits
   engine/              browser.py, axe_runner.py, crawler.py, node_bridge.py, session.py
   engines_node/        Node runner for pa11y / Lighthouse / IBM (runner.mjs, setup.sh)
   rules/               wcag22.py, govuk_checks.py, remediation.py, normalize.py, axe_rules.py
   reporting/           models.py, builder.py, json/markdown/gds renderers
-  vendor/              axe.min.js, axe-rules.json (per-rule catalogue)
+  vendor/              axe.min.js, axe-rules.json (105 axe rules)
 scripts/generate_axe_rules.py   Regenerate vendor/axe-rules.json from axe-core
 ```
 

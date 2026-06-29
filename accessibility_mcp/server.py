@@ -23,7 +23,6 @@ GDS-style compliance summary.
 from __future__ import annotations
 
 import uuid
-from collections import OrderedDict
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -41,43 +40,44 @@ mcp = FastMCP("accessibility-mcp")
 # Audit result cache (for generate_accessibility_statement by audit_id)
 # ----------------------------------------------------------------------------- #
 
-_AUDIT_CACHE: "OrderedDict[str, PageAudit | SiteAudit]" = OrderedDict()
+_AUDIT_CACHE: "dict[str, PageAudit | SiteAudit]" = {}
 _CACHE_MAX = 50
 
 
 def _cache_audit(result: PageAudit | SiteAudit) -> str:
     audit_id = uuid.uuid4().hex[:12]
     _AUDIT_CACHE[audit_id] = result
-    while len(_AUDIT_CACHE) > _CACHE_MAX:
-        _AUDIT_CACHE.popitem(last=False)
+    if len(_AUDIT_CACHE) > _CACHE_MAX:
+        oldest = next(iter(_AUDIT_CACHE))
+        del _AUDIT_CACHE[oldest]
     return audit_id
 
 
-def _page_payload(result: PageAudit) -> dict[str, Any]:
-    summary = gds_summary.summary_from(result)
+def _payload(result: PageAudit | SiteAudit) -> dict[str, Any]:
+    """Unified payload function for both PageAudit and SiteAudit."""
+    summary = gds_summary.summary_from(result) if isinstance(result, PageAudit) else result.summary
     audit_id = _cache_audit(result)
-    return {
-        "audit_id": audit_id,
-        "target": result.target,
-        "status": summary.status.value,
-        "engines_used": result.engines_used,
-        "engine_errors": result.engine_errors,
-        "json": json_report.page_to_dict(result),
-        "markdown_report": markdown_report.render_page(result),
-        "gds_summary": gds_summary.render_summary(summary),
-    }
 
-
-def _site_payload(result: SiteAudit) -> dict[str, Any]:
-    audit_id = _cache_audit(result)
-    return {
-        "audit_id": audit_id,
-        "start_url": result.start_url,
-        "status": result.summary.status.value,
-        "json": json_report.site_to_dict(result),
-        "markdown_report": markdown_report.render_site(result),
-        "gds_summary": gds_summary.render_summary(result.summary),
-    }
+    if isinstance(result, SiteAudit):
+        return {
+            "audit_id": audit_id,
+            "start_url": result.start_url,
+            "status": summary.status.value,
+            "json": json_report.site_to_dict(result),
+            "markdown_report": markdown_report.render_site(result),
+            "gds_summary": gds_summary.render_summary(summary),
+        }
+    else:
+        return {
+            "audit_id": audit_id,
+            "target": result.target,
+            "status": summary.status.value,
+            "engines_used": result.engines_used,
+            "engine_errors": result.engine_errors,
+            "json": json_report.page_to_dict(result),
+            "markdown_report": markdown_report.render_page(result),
+            "gds_summary": gds_summary.render_summary(summary),
+        }
 
 
 # ----------------------------------------------------------------------------- #
@@ -111,7 +111,7 @@ async def audit_url(
         url, level=level, engines=engines, steps=steps,
         include_best_practice=include_best_practice,
     )
-    return _page_payload(result)
+    return _payload(result)
 
 
 @mcp.tool()
@@ -138,7 +138,7 @@ async def audit_html(
         html, level=level, engines=engines, steps=steps,
         include_best_practice=include_best_practice,
     )
-    return _page_payload(result)
+    return _payload(result)
 
 
 @mcp.tool()
@@ -167,7 +167,7 @@ async def audit_site(
         url, max_pages=max_pages, max_depth=max_depth, level=level,
         engines=engines, include_best_practice=include_best_practice,
     )
-    return _site_payload(result)
+    return _payload(result)
 
 
 # ----------------------------------------------------------------------------- #
@@ -203,7 +203,7 @@ async def _audit_single_engine(
         )
     else:
         return {"error": "Provide one of: url, html, or session_id."}
-    return _page_payload(result)
+    return _payload(result)
 
 
 @mcp.tool()
@@ -354,7 +354,7 @@ async def audit_current_page(
         session.page, level=level, engines=engines,
         include_best_practice=include_best_practice,
     )
-    return _page_payload(result)
+    return _payload(result)
 
 
 @mcp.tool()
@@ -376,15 +376,15 @@ def list_engines() -> dict[str, Any]:
         "engines": {
             "axe": {"language": "python", "available": True,
                     "description": "Deque axe-core, WCAG 2.2 tags (in-process)."},
-            "pa11y": {"language": "node", "available": config.node_engines_available(),
+            "pa11y": {"language": "node", "available": bool(config.NODE_EXECUTABLE) and config.NODE_RUNNER.exists() and (config.NODE_ENGINES_DIR / "node_modules").is_dir(),
                       "description": "pa11y with HTML_CodeSniffer + axe runners."},
-            "lighthouse": {"language": "node", "available": config.node_engines_available(),
+            "lighthouse": {"language": "node", "available": bool(config.NODE_EXECUTABLE) and config.NODE_RUNNER.exists() and (config.NODE_ENGINES_DIR / "node_modules").is_dir(),
                            "description": "Google Lighthouse accessibility category."},
-            "ibm": {"language": "node", "available": config.node_engines_available(),
+            "ibm": {"language": "node", "available": bool(config.NODE_EXECUTABLE) and config.NODE_RUNNER.exists() and (config.NODE_ENGINES_DIR / "node_modules").is_dir(),
                     "description": "IBM Equal Access (needs egress to its rule archive)."},
         },
         "default_engines": config.DEFAULT_ENGINES,
-        "node_runner_installed": config.node_engines_available(),
+        "node_runner_installed": bool(config.NODE_EXECUTABLE) and config.NODE_RUNNER.exists() and (config.NODE_ENGINES_DIR / "node_modules").is_dir(),
     }
 
 
@@ -454,7 +454,7 @@ async def audit_automated_checks(
         result = await audit_engine.audit_rules(rule_ids, html=html, level=level)
     else:
         return {"error": "Provide one of: url, html, or session_id."}
-    return _page_payload(result)
+    return _payload(result)
 
 
 @mcp.tool()
@@ -577,45 +577,40 @@ async def generate_accessibility_statement(
 
 
 # ----------------------------------------------------------------------------- #
-# Per-axe-rule tools (one MCP tool per axe-core rule)
+# Per-axe-rule tool (generic tool replacing 100+ individual tools)
 # ----------------------------------------------------------------------------- #
 
 
-def _make_rule_tool(rule: axe_rules.AxeRule):
-    async def tool(url: str = "", html: str = "", session_id: str = "") -> dict[str, Any]:
-        if session_id:
-            session = session_mod.manager.get(session_id)
-            if session is None:
-                return {"error": f"Unknown session_id '{session_id}'."}
-            result = await audit_engine.audit_rule_on_page(session.page, rule.rule_id)
-        elif url:
-            result = await audit_engine.audit_rule(rule.rule_id, url=url)
-        elif html:
-            result = await audit_engine.audit_rule(rule.rule_id, html=html)
-        else:
-            return {"error": "Provide one of: url, html, or session_id."}
-        return _page_payload(result)
+@mcp.tool()
+async def axe_check_rule(
+    rule_id: str,
+    url: str = "",
+    html: str = "",
+    session_id: str = "",
+) -> dict[str, Any]:
+    """Check a specific axe-core rule by ID.
 
-    tool.__name__ = rule.tool_name
-    return tool
+    Replaces 100+ individual axe_* tools with one generic tool.
+    Call list_axe_rules to see available rule IDs.
 
-
-def _register_per_rule_tools() -> int:
-    if not config.PER_RULE_TOOLS:
-        return 0
-    count = 0
-    for rule in axe_rules.all_rules():
-        crit = ", ".join(rule.wcag_criteria) or "no WCAG mapping"
-        description = (
-            f"Check ONLY the axe-core rule '{rule.rule_id}' (WCAG {crit}). "
-            f"{rule.help}. Provide one of: url, html, or session_id."
-        )
-        mcp.add_tool(_make_rule_tool(rule), name=rule.tool_name, description=description)
-        count += 1
-    return count
-
-
-_PER_RULE_COUNT = _register_per_rule_tools()
+    Args:
+        rule_id: The axe-core rule ID to check (e.g. 'color-contrast').
+        url: URL to audit (one of url, html, or session_id required).
+        html: HTML string to audit.
+        session_id: Existing browser session to audit.
+    """
+    if session_id:
+        session = session_mod.manager.get(session_id)
+        if session is None:
+            return {"error": f"Unknown session_id '{session_id}'."}
+        result = await audit_engine.audit_rule_on_page(session.page, rule_id)
+    elif url:
+        result = await audit_engine.audit_rule(rule_id, url=url)
+    elif html:
+        result = await audit_engine.audit_rule(rule_id, html=html)
+    else:
+        return {"error": "Provide one of: url, html, or session_id."}
+    return _payload(result)
 
 
 # ----------------------------------------------------------------------------- #
@@ -638,7 +633,7 @@ def _make_group_tool(rule_ids: list[str]):
             result = await audit_engine.audit_rules(rule_ids, html=html, level=level)
         else:
             return {"error": "Provide one of: url, html, or session_id."}
-        return _page_payload(result)
+        return _payload(result)
 
     return tool
 
@@ -675,32 +670,6 @@ def _register_group_tools() -> int:
 _GROUP_COUNT = _register_group_tools()
 
 
-# ----------------------------------------------------------------------------- #
-# Per-WCAG-criterion automated-check tools (one per automatable criterion)
-# ----------------------------------------------------------------------------- #
-
-
-def _register_automated_check_tools() -> int:
-    if not config.AUTOMATED_CHECK_TOOLS:
-        return 0
-    count = 0
-    for number, rule_ids in automated_checks.automatable_criteria("AA").items():
-        crit = wcag22.CRITERIA_BY_NUMBER.get(number)
-        name = crit.name if crit else number
-        tool_name = automated_checks.criterion_tool_name(number)
-        tool = _make_group_tool(rule_ids)
-        tool.__name__ = tool_name
-        description = (
-            f"Automated check for WCAG {number} {name} (level "
-            f"{crit.level if crit else '?'}): runs the {len(rule_ids)} axe rule(s) "
-            "that test this criterion. Provide one of: url, html, or session_id."
-        )
-        mcp.add_tool(tool, name=tool_name, description=description)
-        count += 1
-    return count
-
-
-_AUTOMATED_CHECK_COUNT = _register_automated_check_tools()
 
 
 def main() -> None:

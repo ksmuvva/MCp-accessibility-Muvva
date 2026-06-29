@@ -14,10 +14,6 @@ from __future__ import annotations
 from accessibility_mcp.rules import axe_rules, wcag22
 
 
-def _sort_key(number: str) -> list[int]:
-    return [int(part) for part in number.split(".")]
-
-
 def automatable_criteria(level: str = "AA") -> dict[str, list[str]]:
     """Map WCAG criterion number -> axe rule ids that automate (part of) it.
 
@@ -32,7 +28,7 @@ def automatable_criteria(level: str = "AA") -> dict[str, list[str]]:
                 mapping.setdefault(crit, set()).add(rule.rule_id)
     return {
         number: sorted(mapping[number])
-        for number in sorted(mapping, key=_sort_key)
+        for number in sorted(mapping, key=lambda n: [int(part) for part in n.split(".")])
     }
 
 
