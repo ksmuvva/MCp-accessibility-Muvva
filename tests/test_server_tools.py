@@ -24,15 +24,11 @@ async def test_all_tool_categories_registered():
     # Catalogue / reporting
     assert {"list_engines", "list_wcag_rules", "list_axe_rules", "list_groups",
             "generate_accessibility_statement"} <= names
-    # Automated-check tools: suite + catalogues + per-criterion (on by default)
+    # Automated-check suite + catalogues. The per-criterion check_wcag_<n> tools
+    # were consolidated into audit_automated_checks (see the 168->41 tool reduction).
     assert {"audit_automated_checks", "list_automated_checks", "list_manual_checks"} <= names
-    check_tools = {n for n in names if n.startswith("check_wcag_")}
-    assert len(check_tools) >= 10
-    assert "check_wcag_1_4_3" in check_tools
-    # Per-rule tools (on by default)
-    axe_tools = {n for n in names if n.startswith("axe_")}
-    assert len(axe_tools) > 80
-    assert "axe_color_contrast" in axe_tools
+    # Per-rule auditing is one generic tool, not ~100 axe_<rule> tools.
+    assert "axe_check_rule" in names
     # Grouped tools (on by default): WCAG principles + axe categories
     assert {"audit_perceivable", "audit_operable", "audit_understandable",
             "audit_robust"} <= names
