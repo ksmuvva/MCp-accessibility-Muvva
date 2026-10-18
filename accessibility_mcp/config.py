@@ -68,10 +68,12 @@ def _chromium_under(base: str) -> str | None:
         if not base or not Path(base).is_dir():
             return None
         # Prefer the full chromium build; fall back to the headless shell.
+        # Covers Linux, macOS and Windows layouts.
         patterns = [
             os.path.join(base, "chromium-*", "chrome-linux", "chrome"),
             os.path.join(base, "chromium_headless_shell-*", "chrome-linux", "headless_shell"),
             os.path.join(base, "chromium-*", "chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"),
+            os.path.join(base, "chromium-*", "chrome-win", "chrome.exe"),
         ]
         for pattern in patterns:
             matches = sorted(glob.glob(pattern))
@@ -104,12 +106,14 @@ def _discover_chromium() -> str | None:
     # Candidate browser dirs, in priority order. The env var (when present) wins,
     # then the managed-remote default, then Playwright's standard cache locations.
     home = os.environ.get("HOME", str(Path.home()))
+    local_appdata = os.environ.get("LOCALAPPDATA")
     candidates = [
         os.environ.get("PLAYWRIGHT_BROWSERS_PATH"),
         "/opt/pw-browsers",
         os.path.join(home, ".cache", "ms-playwright"),
         "/root/.cache/ms-playwright",
         os.path.join(home, "Library", "Caches", "ms-playwright"),  # macOS
+        os.path.join(local_appdata, "ms-playwright") if local_appdata else None,  # Windows
     ]
     for base in candidates:
         found = _chromium_under(base) if base else None
